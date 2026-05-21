@@ -2,8 +2,10 @@
     <div class="player" ref="Player">
         <div class="top">
             <div class="cover-container" @click="toggleCoverMode">
-                <div class="vinyl-disc" :class="{ 'rotating': global.music.isPlaying && !isStaticMode, 'hidden': isStaticMode }"></div>
-                <img ref="coverImg" crossorigin="anonymous" :src="global.music.pic" :alt="global.music.name" :class="{ 'rotating': global.music.isPlaying && !isStaticMode, 'static-mode': isStaticMode }">
+                <div class="vinyl-disc"
+                    :class="{ 'rotating': global.music.isPlaying && !isStaticMode, 'hidden': isStaticMode }"></div>
+                <img ref="coverImg" crossorigin="anonymous" :src="global.music.pic" :alt="global.music.name"
+                    :class="{ 'rotating': global.music.isPlaying && !isStaticMode, 'static-mode': isStaticMode }">
                 <div class="cover-center" :class="{ 'hidden': isStaticMode }"></div>
                 <div class="cover-shadow"></div>
             </div>
@@ -202,6 +204,8 @@ const loadSong = async (song: any, autoPlay = true) => {
     currentTime.value = 0;
     global.music.curLrc = lyrics.value[0]?.content as string;
 
+    updateMediaSessionMetadata();
+
     if (audioRef.value) {
         audioRef.value.load();
         autoPlay && setTimeout(() => audioRef.value?.play(), 200);
@@ -257,6 +261,42 @@ const toggleCoverMode = () => {
     isStaticMode.value = !isStaticMode.value;
 }
 
+const updateMediaSessionMetadata = () => {
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: global.music.name,
+            artist: global.music.artist,
+            album: '',
+            artwork: [
+                { src: global.music.pic }
+            ]
+        });
+    }
+}
+
+const setupMediaSessionActions = () => {
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.setActionHandler('play', () => {
+            audioRef.value?.play();
+        });
+        navigator.mediaSession.setActionHandler('pause', () => {
+            audioRef.value?.pause();
+        });
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+            previousSong();
+        });
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+            nextSong();
+        });
+        navigator.mediaSession.setActionHandler('seekto', (details) => {
+            if (details.seekTime != null && audioRef.value) {
+                audioRef.value.currentTime = details.seekTime;
+                currentTime.value = details.seekTime;
+            }
+        });
+    }
+}
+
 const loadThemeColor = () => {
     const color = getThemeColorFromImage(coverImg.value as HTMLImageElement);
     if (color && Player.value) {
@@ -296,6 +336,7 @@ onMounted(async () => {
         }
 
         audioRef.value && (audioRef.value.volume = currentVolume.value);
+        setupMediaSessionActions();
     } catch (error) {
         console.error('[music]', error);
     }
@@ -374,7 +415,7 @@ onUnmounted(() => {
     object-fit: cover;
     z-index: 4;
     position: relative;
-    box-shadow: 
+    box-shadow:
         0 0 0 4px var(--vinyl-gray),
         0 0 0 6px var(--vinyl-black),
         0 4px 12px color-mix(in srgb, var(--theme-color) 20%, transparent);
@@ -435,7 +476,7 @@ onUnmounted(() => {
     gap: 0.25rem;
 }
 
-.name-artist > div {
+.name-artist>div {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -533,7 +574,9 @@ onUnmounted(() => {
 }
 
 @keyframes rotate {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 @media screen and (max-width: 768px) {
