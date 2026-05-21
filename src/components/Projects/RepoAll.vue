@@ -11,7 +11,7 @@
             </label>
             <Scrollable ref="scrollableRef" :options="{ scrollbar: true }">
                 <div class="repos-grid">
-                    <AnimatePresence>
+                    <AnimatePresence mode="popLayout">
                         <Motion v-for="repo in filteredRepos" :key="repo.html_url" :layout="true"
                             :initial="{ opacity: 0, scale: 0.8, y: 20 }" :animate="{ opacity: 1, scale: 1, y: 0 }"
                             :exit="{ opacity: 0, scale: 0.8, y: -20 }"
@@ -145,7 +145,7 @@ defineExpose({
     gap: 1rem;
 }
 
-.repos-grid > * {
+.repos-grid>* {
     flex: 1 1 100%;
     min-width: 0;
 }
@@ -168,7 +168,7 @@ defineExpose({
         gap: 1.25rem;
     }
 
-    .repos-grid > * {
+    .repos-grid>* {
         flex: 1 1 calc(50% - 1.25rem);
     }
 }
