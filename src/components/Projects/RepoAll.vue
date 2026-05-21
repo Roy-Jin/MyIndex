@@ -16,7 +16,7 @@
                             :initial="{ opacity: 0, scale: 0.8, y: 20 }" :animate="{ opacity: 1, scale: 1, y: 0 }"
                             :exit="{ opacity: 0, scale: 0.8, y: -20 }"
                             :transition="{ type: 'spring', stiffness: 400, damping: 30 }">
-                            <Repo :repo="repo" class="repo-item" :style="{ height: '100%' }" />
+                            <Repo :repo="repo" class="repo-item" />
                         </Motion>
                     </AnimatePresence>
                     <div v-if="filteredRepos.length === 0" class="no-results">
@@ -140,9 +140,18 @@ defineExpose({
 }
 
 .repos-grid {
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
+}
+
+.repos-grid > * {
+    flex: 1 1 100%;
+    min-width: 0;
+}
+
+.repo-item {
+    height: 100%;
 }
 
 .no-results {
@@ -156,8 +165,11 @@ defineExpose({
     }
 
     .repos-grid {
-        grid-template-columns: repeat(2, 1fr);
         gap: 1.25rem;
+    }
+
+    .repos-grid > * {
+        flex: 1 1 calc(50% - 1.25rem);
     }
 }
 </style>
