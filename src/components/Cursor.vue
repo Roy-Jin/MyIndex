@@ -68,6 +68,69 @@ const setupAnimation = () => {
         currentLeaveHandler = null;
     };
 
+    const resetTargetState = () => {
+        if (!activeTarget) return;
+
+        const prevTarget = activeTarget;
+        activeTarget = null;
+        isAnimatingToTarget = false;
+
+        cleanupTarget(prevTarget);
+
+        if (cornersRef.value) {
+            const corners = Array.from(cornersRef.value);
+            gsap.killTweensOf(corners);
+
+            const { cornerSize } = constants;
+            const positions = [
+                { x: -cornerSize * 1.5, y: -cornerSize * 1.5 },
+                { x: cornerSize * 0.5, y: -cornerSize * 1.5 },
+                { x: cornerSize * 0.5, y: cornerSize * 0.5 },
+                { x: -cornerSize * 1.5, y: cornerSize * 0.5 }
+            ];
+
+            const tl = gsap.timeline();
+            corners.forEach((corner, index) => {
+                tl.to(
+                    corner as HTMLElement,
+                    {
+                        x: positions[index]?.x,
+                        y: positions[index]?.y,
+                        duration: 0.3,
+                        ease: 'power3.out'
+                    },
+                    0
+                );
+            });
+        }
+
+        if (resumeTimeout) {
+            clearTimeout(resumeTimeout);
+        }
+
+        resumeTimeout = setTimeout(() => {
+            if (!activeTarget && cursorRef.value && spinTl.value) {
+                const currentRotation = gsap.getProperty(cursorRef.value, 'rotation') as number;
+                const normalizedRotation = currentRotation % 360;
+
+                spinTl.value.kill();
+                spinTl.value = gsap
+                    .timeline({ repeat: -1 })
+                    .to(cursorRef.value, { rotation: '+=360', duration: props.spinDuration, ease: 'none' });
+
+                gsap.to(cursorRef.value, {
+                    rotation: normalizedRotation + 360,
+                    duration: props.spinDuration * (1 - normalizedRotation / 360),
+                    ease: 'none',
+                    onComplete: () => {
+                        spinTl.value?.restart();
+                    }
+                });
+            }
+            resumeTimeout = null;
+        }, 50);
+    };
+
     gsap.set(cursor, {
         xPercent: -50,
         yPercent: -50,
@@ -93,6 +156,10 @@ const setupAnimation = () => {
 
     const enterHandler = (e: MouseEvent) => {
         const directTarget = e.target as Element;
+
+        if (activeTarget && directTarget !== activeTarget && !activeTarget.contains(directTarget)) {
+            resetTargetState();
+        }
 
         const allTargets: Element[] = [];
         let current = directTarget;
@@ -211,59 +278,7 @@ const setupAnimation = () => {
         };
 
         const leaveHandler = () => {
-            activeTarget = null;
-            isAnimatingToTarget = false;
-
-            if (cornersRef.value) {
-                const corners = Array.from(cornersRef.value);
-                gsap.killTweensOf(corners);
-
-                const { cornerSize } = constants;
-                const positions = [
-                    { x: -cornerSize * 1.5, y: -cornerSize * 1.5 },
-                    { x: cornerSize * 0.5, y: -cornerSize * 1.5 },
-                    { x: cornerSize * 0.5, y: cornerSize * 0.5 },
-                    { x: -cornerSize * 1.5, y: cornerSize * 0.5 }
-                ];
-
-                const tl = gsap.timeline();
-                corners.forEach((corner, index) => {
-                    tl.to(
-                        corner as HTMLElement,
-                        {
-                            x: positions[index]?.x,
-                            y: positions[index]?.y,
-                            duration: 0.3,
-                            ease: 'power3.out'
-                        },
-                        0
-                    );
-                });
-            }
-
-            resumeTimeout = setTimeout(() => {
-                if (!activeTarget && cursorRef.value && spinTl.value) {
-                    const currentRotation = gsap.getProperty(cursorRef.value, 'rotation') as number;
-                    const normalizedRotation = currentRotation % 360;
-
-                    spinTl.value.kill();
-                    spinTl.value = gsap
-                        .timeline({ repeat: -1 })
-                        .to(cursorRef.value, { rotation: '+=360', duration: props.spinDuration, ease: 'none' });
-
-                    gsap.to(cursorRef.value, {
-                        rotation: normalizedRotation + 360,
-                        duration: props.spinDuration * (1 - normalizedRotation / 360),
-                        ease: 'none',
-                        onComplete: () => {
-                            spinTl.value?.restart();
-                        }
-                    });
-                }
-                resumeTimeout = null;
-            }, 50);
-
-            cleanupTarget(target);
+            resetTargetState();
         };
 
         currentTargetMove = targetMove;
@@ -275,9 +290,13 @@ const setupAnimation = () => {
 
     window.addEventListener('mouseover', enterHandler, { passive: true });
 
+    const blurHandler = () => resetTargetState();
+    window.addEventListener('blur', blurHandler);
+
     cleanupAnimation = () => {
         window.removeEventListener('mousemove', moveHandler);
         window.removeEventListener('mouseover', enterHandler);
+        window.removeEventListener('blur', blurHandler);
 
         if (activeTarget) {
             cleanupTarget(activeTarget);
