@@ -11,11 +11,11 @@
                     <div class="v-dialog__message">{{ message }}</div>
                     <div class="v-dialog__footer">
                         <motion.button v-if="showCancelButton" class="v-dialog__btn v-dialog__btn--cancel"
-                            :style="{ color: cancelButtonColor }" @click="onCancel" :transition="{ type: 'spring', stiffness: 500, damping: 25 }">
+                            :style="{ color: cancelButtonColor }" @click="onCancel">
                             {{ cancelButtonText || t('tips.cancel') }}
                         </motion.button>
                         <motion.button class="v-dialog__btn v-dialog__btn--confirm"
-                            :style="{ color: confirmButtonColor }" @click="onConfirm" :transition="{ type: 'spring', stiffness: 500, damping: 25 }">
+                            :style="{ color: confirmButtonColor }" @click="onConfirm">
                             {{ confirmButtonText || t('tips.confirm') }}
                         </motion.button>
                     </div>
@@ -28,6 +28,8 @@
 <script setup lang="ts">
 import { motion, AnimatePresence } from 'motion-v';
 import { useI18n } from 'vue-i18n';
+import { watch, onUnmounted } from 'vue';
+import { pushEscHandler, popEscHandler } from '@/utils';
 
 const { t } = useI18n();
 
@@ -58,6 +60,18 @@ const emit = defineEmits<{
     'confirm': [];
     'cancel': [];
 }>();
+
+watch(() => props.show, (val) => {
+    if (val) {
+        pushEscHandler(onCancel);
+    } else {
+        popEscHandler();
+    }
+});
+
+onUnmounted(() => {
+    popEscHandler();
+});
 
 const showDialog = () => {
     emit('update:show', true);
@@ -144,11 +158,6 @@ defineExpose({
     justify-content: center;
     border: none;
     background: transparent;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s;
-    font-family: inherit;
 }
 
 .v-dialog__btn:active {

@@ -28,11 +28,12 @@
 <script setup lang='ts'>
 import { useEnv } from '@/stores/env';
 import { useGlobal } from '@/stores/global';
-import { ref, computed } from 'vue';
+import { ref, computed, watch, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Sun, Moon, Languages } from '@lucide/vue';
 import Scrollable from '@/components/Scrollable.vue';
 import { Switcher, MusicPlayer } from '@/components/Menu';
+import { pushEscHandler, popEscHandler } from '@/utils';
 
 const props = defineProps<{
     top: number
@@ -61,6 +62,18 @@ const toggleLang = (event: MouseEvent) => {
 const closeMenu = () => {
     isOpen.value = false;
 };
+
+watch(() => isOpen.value, (val) => {
+    if (val) {
+        pushEscHandler(closeMenu);
+    } else {
+        popEscHandler();
+    }
+});
+
+onUnmounted(() => {
+    popEscHandler();
+});
 
 defineExpose({
     toggle: () => {

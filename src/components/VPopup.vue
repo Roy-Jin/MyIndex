@@ -6,9 +6,9 @@
                 :transition="{ duration: 0.25, ease: 'easeInOut' }">
                 <motion.div :key="`v-popup-${position}`" class="v-popup"
                     :class="[`v-popup--${position}`, { 'v-popup--round': round }]" :style="popupStyle" @click.stop
-                    :initial="position === 'bottom' ? { y: '100%', opacity: 0 } : position === 'top' ? { y: '-100%', opacity: 0 } : { scale: 0.85, opacity: 0 }"
-                    :animate="{ y: 0, scale: 1, opacity: 1 }"
-                    :exit="position === 'bottom' ? { y: '100%', opacity: 0 } : position === 'top' ? { y: '-100%', opacity: 0 } : { scale: 0.85, opacity: 0 }"
+                    :initial="position === 'bottom' ? { y: '100%' } : position === 'top' ? { y: '-100%' } : { scale: 0.85 }"
+                    :animate="{ y: 0, scale: 1 }"
+                    :exit="position === 'bottom' ? { y: '100%' } : position === 'top' ? { y: '-100%' } : { scale: 0.85 }"
                     :transition="{ type: 'spring', stiffness: 400, damping: 35, mass: 0.8 }">
                     <motion.button v-if="closeable" class="v-popup__close" @click="close" @pointerdown.stop
                         :whileHover="{ scale: 1.1 }" :whileTap="{ scale: 0.9 }"
@@ -27,8 +27,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue';
+import { computed, watch, onUnmounted } from 'vue';
 import { AnimatePresence, motion } from 'motion-v';
+import { pushEscHandler, popEscHandler } from '@/utils';
 
 const props = withDefaults(defineProps<{
     show?: boolean;
@@ -66,6 +67,16 @@ watch(() => props.show, (val) => {
     } else if (props.lockScroll && !val) {
         document.body.style.overflow = '';
     }
+    if (val) {
+        pushEscHandler(close);
+    } else {
+        popEscHandler();
+    }
+});
+
+onUnmounted(() => {
+    popEscHandler();
+    document.body.style.overflow = '';
 });
 
 const onOverlayClick = () => {

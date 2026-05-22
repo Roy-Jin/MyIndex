@@ -1,5 +1,5 @@
 <template>
-    <div @click="handleClick" class="project cursor-target" :class="{ 'active': isAnimating }"
+    <div v-bind="$attrs" @click="handleClick" class="project cursor-target" :class="{ 'active': isAnimating }"
         :style="{ background: `color-mix(in srgb, ${repo.color ?? ''} 20%, transparent)` }">
         <div class="project-content">
             <div class="project-header">
@@ -11,9 +11,9 @@
             <div v-if="displayDescription" class="project-description">
                 <TextEllipsis> {{ displayDescription }}</TextEllipsis>
             </div>
-            <div v-if="repo.homepage" class="project-homepage" @click.stop="handleHomepageClick">
+            <div v-if="repo.homepage" class="project-homepage">
                 <LinkIcon :size="14" />
-                <span class="homepage-text">{{ repo.homepage }}</span>
+                <span class="homepage-text" @click.stop="handleHomepageClick">{{ repo.homepage }}</span>
             </div>
             <div class="project-footer">
                 <div class="project-stats">
@@ -41,8 +41,8 @@
             </div>
         </div>
     </div>
-    <VConfirmDialog v-model:show="dialogShow" :title="dialogTitle" :message="dialogMessage"
-        close-on-click-overlay @confirm="onDialogConfirm" />
+    <VConfirmDialog v-model:show="dialogShow" :title="dialogTitle" :message="dialogMessage" close-on-click-overlay
+        @confirm="onDialogConfirm" />
 </template>
 
 <script setup lang="ts">
@@ -227,10 +227,6 @@ const handleHomepageClick = () => {
     gap: 0.4rem;
     color: var(--theme-color);
     overflow: hidden;
-
-    &:hover {
-        text-decoration: underline;
-    }
 }
 
 .homepage-text {
@@ -238,6 +234,10 @@ const handleHomepageClick = () => {
     text-overflow: ellipsis;
     white-space: nowrap;
     min-width: 0;
+
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 @keyframes pulse {
