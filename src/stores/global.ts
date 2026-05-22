@@ -5,6 +5,7 @@ import {
   createCircleViewTransition,
   formatString,
   getSystemTheme,
+  isGeckoOrWebKit,
   setDocumentTheme,
   translateTexts,
 } from "@/utils";
@@ -73,7 +74,7 @@ export const useGlobal = defineStore("global", {
         setDocumentTheme(newTheme);
       };
 
-      if (event) {
+      if (event && !isGeckoOrWebKit()) {
         createCircleViewTransition(event, toggleThemeAction);
       } else {
         toggleThemeAction();
@@ -88,7 +89,7 @@ export const useGlobal = defineStore("global", {
         setI18nLanguage(this.lang);
       };
 
-      if (event) {
+      if (event && !isGeckoOrWebKit()) {
         createCircleViewTransition(event, toggleLangAction);
       } else {
         toggleLangAction();

@@ -4,6 +4,11 @@ interface ViewTransitionOptions {
   enableGrayscale?: boolean
 }
 
+export const isGeckoOrWebKit = (): boolean => {
+  const ua = navigator.userAgent
+  return /firefox/i.test(ua) || (/applewebkit/i.test(ua) && !/chrome/i.test(ua))
+}
+
 export const createCircleViewTransition = async (
   event: { clientX: number; clientY: number },
   updateCallback: () => void,
