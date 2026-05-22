@@ -110,6 +110,7 @@ export const useGlobal = defineStore("global", {
         upd_freq: number;
       },
     ): Promise<void> {
+      if (import.meta.env.DEV && this.updated_at.sayings > 0) return;
       if (this.updated_at.sayings + config.upd_freq > Date.now()) return;
       let enabledAPIs = config.apis.filter((api) => api.enable);
       if (enabledAPIs.length === 0) {
@@ -165,6 +166,7 @@ export const useGlobal = defineStore("global", {
       api: string;
       upd_freq: number;
     }): Promise<void> {
+      if (import.meta.env.DEV && this.updated_at.gh_repos > 0) return;
       if (this.updated_at.gh_repos + config.upd_freq > Date.now()) return;
       const url = formatString(config.api, config.user);
       const data = await fetch(url).then((response) => response.json());
@@ -197,6 +199,7 @@ export const useGlobal = defineStore("global", {
       id: string;
       upd_freq: number;
     }): Promise<void> {
+      if (import.meta.env.DEV && this.updated_at.music > 0) return;
       if (this.updated_at.music + config.upd_freq > Date.now()) return;
       const apis = config.apis;
       for (let i = 0; i < apis.length; i++) {
