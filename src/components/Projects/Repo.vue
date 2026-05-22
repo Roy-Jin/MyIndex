@@ -41,13 +41,15 @@
             </div>
         </div>
     </div>
+    <VConfirmDialog v-model:show="dialogShow" :title="dialogTitle" :message="dialogMessage"
+        close-on-click-overlay @confirm="onDialogConfirm" />
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Star, Code, GitFork, Eye, Clock, BookMarked, LinkIcon } from '@lucide/vue';
-import { showConfirmDialog } from 'vant';
+import VConfirmDialog from '@/components/VConfirmDialog.vue';
 import TextEllipsis from '@/components/TextEllipsis.vue';
 import type { RepoProps } from '@/components/Projects';
 import { formatDate } from '@/utils';
@@ -66,6 +68,21 @@ const displayDescription = computed(() => {
 });
 
 const isAnimating = ref(false);
+const dialogShow = ref(false);
+const dialogTitle = ref('');
+const dialogMessage = ref('');
+const pendingUrl = ref('');
+
+const openDialog = (url: string) => {
+    pendingUrl.value = url;
+    dialogTitle.value = t('tips.openLink.title');
+    dialogMessage.value = `${t('tips.openLink.message')}\n\n${url}`;
+    dialogShow.value = true;
+};
+
+const onDialogConfirm = () => {
+    window.open(pendingUrl.value, '_blank');
+};
 
 const handleClick = () => {
     isAnimating.value = true;
@@ -73,29 +90,13 @@ const handleClick = () => {
         isAnimating.value = false;
     }, 400);
     if (props.repo.html_url) {
-        showConfirmDialog({
-            title: t('tips.openLink.title'),
-            message: `${t('tips.openLink.message')}\n\n${props.repo.html_url}`,
-            cancelButtonColor: 'color-mix(in srgb, grey 60%, transparent)',
-            confirmButtonColor: 'var(--theme-color)',
-            closeOnClickOverlay: true
-        }).then(() => {
-            window.open(props.repo.html_url, '_blank');
-        }).catch(() => { });
+        openDialog(props.repo.html_url);
     }
 };
 
 const handleHomepageClick = () => {
     if (props.repo.homepage) {
-        showConfirmDialog({
-            title: t('tips.openLink.title'),
-            message: `${t('tips.openLink.message')}\n\n${props.repo.homepage}`,
-            cancelButtonColor: 'color-mix(in srgb, grey 60%, transparent)',
-            confirmButtonColor: 'var(--theme-color)',
-            closeOnClickOverlay: true
-        }).then(() => {
-            window.open(props.repo.homepage as string, '_blank');
-        }).catch(() => { });
+        openDialog(props.repo.homepage);
     }
 };
 </script>
@@ -103,6 +104,7 @@ const handleHomepageClick = () => {
 <style scoped>
 .project {
     width: 100%;
+    height: 100%;
     padding: 1rem;
     display: flex;
     border-radius: 10px;

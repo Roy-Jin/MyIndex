@@ -1,12 +1,14 @@
 {
   "tips": {
-    "loading": "加载中...",
+    "loading": "Loading...",
     "openLink": {
       "title": "Open this link?",
       "message": "You sure you wanna open this?"
     },
     "expand": "More",
-    "collapse": "Less"
+    "collapse": "Less",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
   },
   "subtitle": "Hi, welcome to my personal website!",
   "quote": "Coffee is bitter, Life is sweet.",

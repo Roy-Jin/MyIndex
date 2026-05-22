@@ -5,18 +5,25 @@
             <Icon :icon="link.icon" :fill="link.color" />
         </div>
     </div>
+    <VConfirmDialog v-model:show="dialogShow" :title="dialogTitle" :message="dialogMessage" close-on-click-overlay
+        confirm-button-color="var(--theme-color)"
+        :cancel-button-color="'color-mix(in srgb, grey 60%, transparent)'" @confirm="onDialogConfirm" />
 </template>
 
 <script setup lang='ts'>
-import { defineAsyncComponent, computed } from 'vue';
+import { defineAsyncComponent, computed, ref } from 'vue';
 import { useEnv } from '@/stores/env';
 const Icon = defineAsyncComponent(() => import('../Icon.vue'));
 import { useI18n } from 'vue-i18n';
-import { showConfirmDialog } from 'vant';
-import 'vant/es/dialog/style';
+import VConfirmDialog from '@/components/VConfirmDialog.vue';
 
 const { t } = useI18n();
 const env = useEnv();
+
+const dialogShow = ref(false);
+const dialogTitle = ref('');
+const dialogMessage = ref('');
+const pendingUrl = ref('');
 
 const socialLinks = computed(() => {
     return env.social.map(link => {
@@ -29,15 +36,14 @@ const socialLinks = computed(() => {
 });
 
 const handleClick = (url: string) => {
-    showConfirmDialog({
-        title: t('tips.openLink.title'),
-        message: `${t('tips.openLink.message')}\n\n${url}`,
-        cancelButtonColor: 'color-mix(in srgb, grey 60%, transparent)',
-        confirmButtonColor: 'var(--theme-color)',
-        closeOnClickOverlay: true
-    }).then(() => {
-        window.open(url, '_blank');
-    }).catch(() => { });
+    pendingUrl.value = url;
+    dialogTitle.value = t('tips.openLink.title');
+    dialogMessage.value = `${t('tips.openLink.message')}\n\n${url}`;
+    dialogShow.value = true;
+};
+
+const onDialogConfirm = () => {
+    window.open(pendingUrl.value, '_blank');
 };
 </script>
 

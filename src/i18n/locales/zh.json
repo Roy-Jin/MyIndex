@@ -6,7 +6,9 @@
       "message": "你确定要打开这个吗？"
     },
     "expand": "展开",
-    "collapse": "收起"
+    "collapse": "收起",
+    "confirm": "确认",
+    "cancel": "取消"
   },
   "subtitle": "嗨，欢迎来到我的个人网站！",
   "quote": "咖啡很苦，生活很甜！",

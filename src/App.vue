@@ -4,7 +4,6 @@
         <router-view />
     </div>
     <TargetCursor :spin-duration="1.5" />
-    <van-config-provider :theme="global.theme" />
 </template>
 
 <script setup lang="ts">

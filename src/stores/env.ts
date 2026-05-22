@@ -81,7 +81,7 @@ export const useEnv = defineStore("env", {
                     },
                 },
                 {
-                    enable: true,
+                    enable: false,
                     name: "uselessfacts",
                     url: "https://uselessfacts.jsph.pl/api/v2/facts/random",
                     format: async (data: any) => {

@@ -4,7 +4,6 @@ import { routes } from "vue-router/auto-routes";
 import { createRouter, createWebHistory } from "vue-router";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import i18n from "./i18n";
-import { ConfigProvider } from 'vant';
 
 import App from "./App.vue";
 
@@ -17,6 +16,5 @@ app.use(createRouter({
     routes,
 }));
 app.use(i18n);
-app.use(ConfigProvider);
 
 app.mount("#app");

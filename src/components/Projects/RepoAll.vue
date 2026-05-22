@@ -1,6 +1,5 @@
 <template>
-    <Popup v-model:show="show" round position="bottom" :teleport="'body'" :style="{ height: '90%', overflow: 'hidden' }"
-        :lock-scroll="false" :closeable="true">
+    <VPopup v-model:show="show" round closeable>
         <div class="popup-content">
             <h2 class="popup-title">{{ t('projects.title') }}</h2>
             <label class="search-wrapper cursor-target">
@@ -25,14 +24,13 @@
                 </div>
             </Scrollable>
         </div>
-    </Popup>
+    </VPopup>
 </template>
 
 <script setup lang='ts'>
 import { ref, watch, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Popup } from 'vant';
-import 'vant/es/popup/style';
+import VPopup from '@/components/VPopup.vue';
 import { Search, X } from '@lucide/vue';
 import { Motion, AnimatePresence } from 'motion-v';
 import Scrollable from '@/components/Scrollable.vue';
@@ -96,6 +94,7 @@ defineExpose({
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    width: 100%;
     max-width: 68rem;
     margin: 0 auto;
 }

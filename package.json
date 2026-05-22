@@ -27,7 +27,6 @@
     "motion-v": "^2.2.1",
     "pinia": "^3.0.4",
     "pinia-plugin-persistedstate": "^4.7.1",
-    "vant": "^4.9.24",
     "vue": "^3.5.34",
     "vue-clamp": "^1.4.0",
     "vue-i18n": "^11.4.2",

@@ -18,23 +18,37 @@
         <hr>
         <div id="sayings">
             <p class="text">
-                <TextEllipsis :maxLines="3">{{ global.sayings.text }}</TextEllipsis>
+                <TextEllipsis :maxLines="3">{{ displayText }}</TextEllipsis>
             </p>
-            <p class="from">——《{{ t(global.sayings.from) }}》</p>
+            <p class="from">——《{{ displayFrom }}》</p>
         </div>
     </div>
 </template>
 
 <script setup lang='ts'>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import dayjs from 'dayjs';
 import { Counter } from '@/components/Today';
 import { useI18n } from 'vue-i18n';
 import { useGlobal } from '@/stores/global';
 import TextEllipsis from '@/components/TextEllipsis.vue';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const global = useGlobal();
+
+const displayText = computed(() => {
+    if (locale.value === 'en' && global.sayings.text_en) {
+        return global.sayings.text_en;
+    }
+    return global.sayings.text;
+});
+
+const displayFrom = computed(() => {
+    if (locale.value === 'en' && global.sayings.from_en) {
+        return global.sayings.from_en;
+    }
+    return t(global.sayings.from);
+});
 
 const time = ref({
     hours: 0,

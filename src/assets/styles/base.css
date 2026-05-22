@@ -16,12 +16,6 @@
     --filter-blur: blur(20px);
 }
 
-:root:root {
-    /* Vant 自定义变量 */
-    --van-base-font: "仓耳渔阳体";
-    --van-background-2: var(--main-bg);
-}
-
 [data-theme="dark"] {
     /* 主色调 */
     --main-bg: #26242e;
@@ -59,6 +53,11 @@
     cursor: url('@/assets/cursor.svg') 16 16, auto !important;
 }
 
+::selection {
+    background-color: var(--theme-color);
+    color: var(--main-bg);
+}
+
 button,
 .cursor-target {
     cursor: url('@/assets/cursor2.svg') 16 16, auto !important;
@@ -76,10 +75,6 @@ body {
     font-family: "仓耳渔阳体";
     color: var(--text-color);
     background-color: var(--main-bg);
-}
-
-.van-overlay {
-    backdrop-filter: var(--filter-blur);
 }
 
 ::view-transition-old(root),

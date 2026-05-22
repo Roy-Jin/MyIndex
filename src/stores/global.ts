@@ -6,7 +6,7 @@ import {
   formatString,
   getSystemTheme,
   setDocumentTheme,
-  translateTexts
+  translateTexts,
 } from "@/utils";
 
 export const useGlobal = defineStore("global", {
@@ -16,6 +16,8 @@ export const useGlobal = defineStore("global", {
     sayings: {
       text: "" as string,
       from: "" as string,
+      text_en: null as string | null,
+      from_en: null as string | null,
     },
     gh_repos: [] as {
       name: string;
@@ -126,6 +128,8 @@ export const useGlobal = defineStore("global", {
           this.sayings = {
             text: formated.text,
             from: formated.from,
+            text_en: null,
+            from_en: null,
           };
           break;
         } else {
@@ -135,6 +139,25 @@ export const useGlobal = defineStore("global", {
         }
       }
       this.updated_at.sayings = Date.now();
+
+      const env = useEnv();
+      const textsToTranslate = [this.sayings.text];
+      const shouldTranslateFrom = this.sayings.from &&
+        !this.sayings.from.startsWith("sayings.");
+      if (shouldTranslateFrom) {
+        textsToTranslate.push(this.sayings.from);
+      }
+
+      translateTexts(
+        textsToTranslate,
+        "en",
+        env.translate.api,
+      ).then((translated) => {
+        this.sayings.text_en = translated[0] || this.sayings.text;
+        if (shouldTranslateFrom && translated.length > 1) {
+          this.sayings.from_en = translated[1] || this.sayings.from;
+        }
+      });
     },
 
     async loadGhRepos(config: {
