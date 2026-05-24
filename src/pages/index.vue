@@ -19,7 +19,7 @@ import {
     Today,
     Projects
 } from '@/layout';
-import Scrollable from '@/components/Scrollable.vue';
+import { Scrollable } from '@/components/Libs';
 
 const env = useEnv();
 const global = useGlobal();

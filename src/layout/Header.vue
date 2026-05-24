@@ -13,8 +13,7 @@
             </div>
             <div class="menu-btn">
                 <component v-if="global.music.audio" :is="Disc3Icon" @click="tooglePlayPause" :size="24"
-                    :class="{ 'play': global.music.isPlaying, 'pause': !global.music.isPlaying }"
-                    class="cursor-target"
+                    :class="{ 'play': global.music.isPlaying, 'pause': !global.music.isPlaying }" class="cursor-target"
                     :color="global.music.themeColor" />
                 <component :is="menuRef?.isOpen ? XIcon : MenuIcon" strokeWidth="3px" @click="toggleMenu" :size="32"
                     color="var(--theme-color)" class="cursor-target" />

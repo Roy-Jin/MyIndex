@@ -1,24 +1,34 @@
 <template>
-    <div class="switcher" :class="{ 'active': isAnimating }" @click="handleClick">
+    <motion.div class="switcher" @click="handleClick" @mouseenter="isHovered = true" @mouseleave="isHovered = false"
+        :animate="containerAnim" :whileTap="{ scale: 0.98 }"
+        :transition="{ type: 'spring', stiffness: 400, damping: 30 }">
+        <motion.div class="shine-effect" :animate="{ left: isHovered ? '100%' : '-100%' }"
+            :transition="{ duration: 0.6, ease: 'easeInOut' }" />
         <div class="icon-wrapper">
-            <div class="icon-circle">
-                <component :is="icon" class="switcher-icon" />
-            </div>
+            <motion.div class="icon-circle" :initial="{ scale: 1, rotate: 0 }" :animate="circleAnim"
+                :transition="circleTransition">
+                <motion.div :key="clickCount" :initial="iconInitial" :animate="{ rotate: 0, scale: 1, opacity: 1 }"
+                    :transition="{ type: 'spring', stiffness: 200, damping: 15 }">
+                    <component :is="icon" class="switcher-icon" />
+                </motion.div>
+            </motion.div>
         </div>
         <div class="switcher-text">
             <span class="label">{{ label }}</span>
             <span class="value">{{ value }}</span>
         </div>
-        <div class="arrow">
+        <motion.div class="arrow" :animate="{ x: isHovered ? 4 : 0 }"
+            :transition="{ type: 'spring', stiffness: 300, damping: 15 }">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 18l6-6-6-6" />
             </svg>
-        </div>
-    </div>
+        </motion.div>
+    </motion.div>
 </template>
 
 <script setup lang='ts'>
-import { ref, type FunctionalComponent } from 'vue';
+import { ref, computed, type FunctionalComponent } from 'vue';
+import { motion } from 'motion-v';
 
 const props = defineProps<{
     icon: FunctionalComponent;
@@ -30,10 +40,42 @@ const emit = defineEmits<{
     (e: 'click', event: MouseEvent): void;
 }>();
 
+const isHovered = ref(false);
 const isAnimating = ref(false);
+const clickCount = ref(0);
+
+const containerAnim = computed(() => ({
+    borderColor: isHovered.value ? 'var(--theme-color)' : 'transparent',
+    boxShadow: isHovered.value
+        ? '0 8px 24px color-mix(in srgb, var(--theme-color) 20%, transparent)'
+        : '0 0 0 transparent',
+}));
+
+const circleAnim = computed(() => {
+    if (isAnimating.value) {
+        return { scale: [1, 1.15, 1] };
+    }
+    return { scale: isHovered.value ? 1.1 : 1, rotate: isHovered.value ? 10 : 0 };
+});
+
+const circleTransition = computed(() => {
+    if (isAnimating.value) {
+        return { duration: 0.4, ease: 'easeInOut' as const };
+    }
+    return { type: 'spring' as const, stiffness: 300, damping: 15 };
+});
+
+const iconInitial = computed(() => {
+    if (clickCount.value === 0) {
+        return { rotate: 0, scale: 1, opacity: 1 };
+    }
+    return { rotate: -180, scale: 0.5, opacity: 0 };
+});
 
 const handleClick = (event: MouseEvent) => {
+    if (isAnimating.value) return;
     isAnimating.value = true;
+    clickCount.value++;
     emit('click', event);
     setTimeout(() => {
         isAnimating.value = false;
@@ -49,54 +91,11 @@ const handleClick = (event: MouseEvent) => {
     padding: 1rem 1.25rem;
     border-radius: 16px;
     background: var(--theme-color-light);
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     border: 2px solid transparent;
     width: 100%;
     position: relative;
     overflow: hidden;
     cursor: pointer;
-
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--theme-color) 10%, transparent), transparent);
-        transition: left 0.6s ease;
-    }
-
-    &:hover {
-        border-color: var(--theme-color);
-        box-shadow: 0 8px 24px color-mix(in srgb, var(--theme-color) 20%, transparent);
-
-        &::before {
-            left: 100%;
-        }
-
-        .arrow {
-            transform: translateX(4px);
-        }
-
-        .icon-circle {
-            transform: scale(1.1) rotate(10deg);
-        }
-    }
-
-    &:active {
-        transform: scale(0.98);
-    }
-
-    &.active {
-        .icon-circle {
-            animation: pulse 0.4s ease;
-        }
-
-        .switcher-icon {
-            animation: rotateIn 0.4s ease;
-        }
-    }
 
     .icon-wrapper {
         flex-shrink: 0;
@@ -110,7 +109,6 @@ const handleClick = (event: MouseEvent) => {
         align-items: center;
         justify-content: center;
         background: color-mix(in srgb, var(--theme-color) 15%, transparent);
-        transition: all 0.3s ease;
 
         .switcher-icon {
             width: 26px;
@@ -142,31 +140,16 @@ const handleClick = (event: MouseEvent) => {
         flex-shrink: 0;
         color: var(--theme-color);
         opacity: 0.6;
-        transition: all 0.3s ease;
-    }
-}
-
-@keyframes pulse {
-
-    0%,
-    100% {
-        transform: scale(1);
     }
 
-    50% {
-        transform: scale(1.15);
-    }
-}
-
-@keyframes rotateIn {
-    from {
-        transform: rotate(-180deg) scale(0.5);
-        opacity: 0;
-    }
-
-    to {
-        transform: rotate(0deg) scale(1);
-        opacity: 1;
+    .shine-effect {
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--theme-color) 10%, transparent), transparent);
     }
 }
 

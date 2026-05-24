@@ -4,20 +4,28 @@
             <motion.div v-if="show" key="v-dialog-overlay" class="v-dialog-overlay" @click="onOverlayClick"
                 :initial="{ opacity: 0 }" :animate="{ opacity: 1 }" :exit="{ opacity: 0 }"
                 :transition="{ duration: 0.2, ease: 'easeInOut' }">
-                <motion.div key="v-dialog" class="v-dialog" @click.stop :initial="{ scale: 0.8, opacity: 0, y: 20 }"
+                <motion.div key="v-dialog" drag :dragConstraints="{ top: 0, bottom: 0, left: 0, right: 0 }"
+                    class="v-dialog" @click.stop :initial="{ scale: 0.8, opacity: 0, y: 20 }"
                     :animate="{ scale: 1, opacity: 1, y: 0 }" :exit="{ scale: 0.8, opacity: 0, y: 20 }"
                     :transition="{ type: 'spring', stiffness: 450, damping: 32, mass: 0.7 }">
-                    <div v-if="title" class="v-dialog__title">{{ title }}</div>
-                    <div class="v-dialog__message">{{ message }}</div>
-                    <div class="v-dialog__footer">
-                        <motion.button v-if="showCancelButton" class="v-dialog__btn v-dialog__btn--cancel"
+                    <div v-if="title || $slots.title" class="v-dialog__title">
+                        <slot name="title">{{ title }}</slot>
+                    </div>
+                    <div class="v-dialog__message">
+                        <slot>{{ message }}</slot>
+                    </div>
+                    <div v-if="$slots.actions" class="v-dialog__footer" @click.stop>
+                        <slot name="actions"></slot>
+                    </div>
+                    <div v-else class="v-dialog__footer">
+                        <button v-if="showCancelButton" class="v-dialog__btn v-dialog__btn--cancel"
                             :style="{ color: cancelButtonColor }" @click="onCancel">
                             {{ cancelButtonText || t('tips.cancel') }}
-                        </motion.button>
-                        <motion.button class="v-dialog__btn v-dialog__btn--confirm"
-                            :style="{ color: confirmButtonColor }" @click="onConfirm">
+                        </button>
+                        <button class="v-dialog__btn v-dialog__btn--confirm" :style="{ color: confirmButtonColor }"
+                            @click="onConfirm">
                             {{ confirmButtonText || t('tips.confirm') }}
-                        </motion.button>
+                        </button>
                     </div>
                 </motion.div>
             </motion.div>
@@ -28,10 +36,11 @@
 <script setup lang="ts">
 import { motion, AnimatePresence } from 'motion-v';
 import { useI18n } from 'vue-i18n';
-import { watch, onUnmounted } from 'vue';
+import { watch, onUnmounted, ref } from 'vue';
 import { pushEscHandler, popEscHandler } from '@/utils';
 
 const { t } = useI18n();
+const overlayRef = ref();
 
 const props = withDefaults(defineProps<{
     show?: boolean;
@@ -122,7 +131,7 @@ defineExpose({
     background: var(--main-bg, #fff);
     border-radius: 16px;
     max-width: 85%;
-    width: 320px;
+    width: 20rem;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     overflow: hidden;
 }

@@ -1,5 +1,5 @@
 <template>
-    <VPopup v-model:show="show" round closeable>
+    <Popup v-model:show="show" round closeable>
         <div class="popup-content">
             <h2 class="popup-title">{{ t('projects.title') }}</h2>
             <label class="search-wrapper cursor-target">
@@ -24,16 +24,15 @@
                 </div>
             </Scrollable>
         </div>
-    </VPopup>
+    </Popup>
 </template>
 
 <script setup lang='ts'>
 import { ref, watch, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import VPopup from '@/components/VPopup.vue';
+import { Popup, Scrollable } from '@/components/Libs';
 import { Search, X } from '@lucide/vue';
 import { Motion, AnimatePresence } from 'motion-v';
-import Scrollable from '@/components/Scrollable.vue';
 import { Repo, type RepoProps } from '@/components/Projects';
 import { useDebouncedRef } from '@/utils';
 

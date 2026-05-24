@@ -1,6 +1,9 @@
-import { ref, watch, type Ref } from 'vue';
+import { type Ref, ref, watch } from "vue";
 
-export function useDebouncedRef<T>(source: Ref<T>, delay: number = 300): { debounced: Ref<T>; cancel: () => void } {
+export function useDebouncedRef<T>(
+    source: Ref<T>,
+    delay: number = 300,
+): { debounced: Ref<T>; cancel: () => void } {
     const debounced = ref(source.value) as Ref<T>;
     let timer: ReturnType<typeof setTimeout> | null = null;
 

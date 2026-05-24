@@ -1,6 +1,6 @@
 <template>
     <LineClamp as="span" v-model:expanded="expanded" :text="computedText" :max-lines="maxLines">
-        <template #after="{ clamped, expanded, toggle }">
+        <template v-if="expandActive" #after="{ clamped, expanded, toggle }">
             <span v-if="clamped && !expanded" @click="(event) => {
                 event.stopPropagation();
                 toggle();
@@ -33,6 +33,10 @@ const props = defineProps({
     maxLines: {
         type: Number,
         default: 2
+    },
+    expandActive: {
+        type: Boolean,
+        default: false
     }
 });
 

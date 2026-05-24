@@ -1,15 +1,21 @@
-import { getColorSync } from 'colorthief'
+import { getColorSync } from "colorthief";
 
-export const getThemeColorFromImage = (img: HTMLImageElement): string | null => {
+export const getThemeColorFromImage = (
+  img: HTMLImageElement,
+): string | null => {
   try {
-    const color = getColorSync(img)
-    return color ? color.hex() : null
+    const color = getColorSync(img);
+    return color ? color.hex() : null;
   } catch {
-    return null
+    return null;
   }
-}
+};
 
-export const setCSSVariable = (name: string, value: string, element?: HTMLElement): void => {
-  const target = element || document.documentElement
-  target.style.setProperty(name, value)
-}
+export const setCSSVariable = (
+  name: string,
+  value: string,
+  element?: HTMLElement,
+): void => {
+  const target = element || document.documentElement;
+  target.style.setProperty(name, value);
+};

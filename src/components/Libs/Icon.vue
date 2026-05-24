@@ -4,11 +4,11 @@
 
 <script setup lang='ts'>
 import { computed } from 'vue';
-import qq from './Icons/qq.vue';
-import github from './Icons/github.vue';
-import bilibili from './Icons/bilibili.vue';
-import envelope from './Icons/envelope.vue';
-import quoteLeft from './Icons/quote-left.vue';
+import qq from '@/components/Libs/Icons/qq.vue';
+import github from '@/components/Libs/Icons/github.vue';
+import bilibili from '@/components/Libs/Icons/bilibili.vue';
+import envelope from '@/components/Libs/Icons/envelope.vue';
+import quoteLeft from '@/components/Libs/Icons/quote-left.vue';
 
 const props = defineProps<{
     icon: string,

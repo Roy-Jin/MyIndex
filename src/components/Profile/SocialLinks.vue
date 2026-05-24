@@ -5,24 +5,38 @@
             <Icon :icon="link.icon" :fill="link.color" />
         </div>
     </div>
-    <VConfirmDialog v-model:show="dialogShow" :title="dialogTitle" :message="dialogMessage" close-on-click-overlay
-        confirm-button-color="var(--theme-color)"
-        :cancel-button-color="'color-mix(in srgb, grey 60%, transparent)'" @confirm="onDialogConfirm" />
+    <ConfirmDialog v-model:show="dialogShow" @confirm="onDialogConfirm" close-on-click-overlay
+        @update:show="isQrShow = false">
+        <template #title>{{ dialogTitle }}</template>
+        {{ t('tips.openLink.message') }}
+        <div v-if="isQrShow">
+            <QR :value="pendingUrl" @dblclick="isQrShow = false" />
+            <div class="w-full h-6 flex items-center justify-center" @click="isQrShow = false">
+                <XIcon class="cursor-target" strokeWidth="5px" />
+            </div>
+        </div>
+        <div v-else class="flex items-center justify-center gap-2 mt-5">
+            <TextEllipsis :max-lines="1" :text="pendingUrl" />
+            <div class="w-6 h-6 cursor-target">
+                <QrCodeIcon @click="isQrShow = true" />
+            </div>
+        </div>
+    </ConfirmDialog>
 </template>
 
 <script setup lang='ts'>
-import { defineAsyncComponent, computed, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useEnv } from '@/stores/env';
-const Icon = defineAsyncComponent(() => import('../Icon.vue'));
+import { Icon, ConfirmDialog, QR, TextEllipsis } from '@/components/Libs';
 import { useI18n } from 'vue-i18n';
-import VConfirmDialog from '@/components/VConfirmDialog.vue';
+import { QrCodeIcon, XIcon } from '@lucide/vue';
 
 const { t } = useI18n();
 const env = useEnv();
 
 const dialogShow = ref(false);
 const dialogTitle = ref('');
-const dialogMessage = ref('');
+const isQrShow = ref(false);
 const pendingUrl = ref('');
 
 const socialLinks = computed(() => {
@@ -38,7 +52,6 @@ const socialLinks = computed(() => {
 const handleClick = (url: string) => {
     pendingUrl.value = url;
     dialogTitle.value = t('tips.openLink.title');
-    dialogMessage.value = `${t('tips.openLink.message')}\n\n${url}`;
     dialogShow.value = true;
 };
 

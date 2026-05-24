@@ -1,13 +1,12 @@
 <template>
     <div class="quote">
-        <Icon icon="quoteLeft" :fill="iconColor || 'var(--theme-color)' " />
+        <Icon icon="quoteLeft" :fill="iconColor || 'var(--theme-color)'" />
         <p class="quote-text">{{ quote }}</p>
     </div>
 </template>
 
 <script setup lang='ts'>
-import { defineAsyncComponent } from 'vue';
-const Icon = defineAsyncComponent(() => import('../Icon.vue'));
+import { Icon } from '@/components/Libs';
 
 const props = defineProps<{
     quote: string;

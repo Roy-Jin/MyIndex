@@ -2,7 +2,7 @@
     <div class="today-section">
         <div id="date">
             <p class="time">
-                <span class="num" :style="{ width: '100%' }">
+                <span class="num">
                     <Counter :font-size="50" :font-weight="600" :value="time.hours"
                         :mediaScreen="[{ maxWidth: 768, props: { fontSize: 40 } }]" />
                     <span>:</span>
@@ -18,7 +18,7 @@
         <hr>
         <div id="sayings">
             <p class="text">
-                <TextEllipsis :maxLines="3">{{ displayText }}</TextEllipsis>
+                <TextEllipsis :maxLines="3" expand-active>{{ displayText }}</TextEllipsis>
             </p>
             <p class="from">——《{{ displayFrom }}》</p>
         </div>
@@ -31,7 +31,7 @@ import dayjs from 'dayjs';
 import { Counter } from '@/components/Today';
 import { useI18n } from 'vue-i18n';
 import { useGlobal } from '@/stores/global';
-import TextEllipsis from '@/components/TextEllipsis.vue';
+import { TextEllipsis } from '@/components/Libs';
 
 const { t, locale } = useI18n();
 const global = useGlobal();
@@ -99,6 +99,7 @@ onUnmounted(() => {
 }
 
 .time>.num {
+    width: 100%;
     font-family: sans-serif;
 
     &>span {

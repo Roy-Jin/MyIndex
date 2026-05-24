@@ -1,6 +1,6 @@
 <template>
     <motion.div drag :dragConstraints="{ left: 0, right: 0, top: 0, bottom: 0 }" :dragElastic="1"
-        class="avatar-container cursor-target" :style="{ cursor: 'none !important' }">
+        class="avatar-container cursor-target">
         <svg class="avatar" width="100%" height="100%" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
             <defs>
                 <clipPath id="circleClip">
@@ -38,6 +38,7 @@ const env = useEnv();
     max-width: 66%;
     border-radius: 50%;
     overflow: hidden;
+    cursor: none !important;
 
     .avatar {
         width: 100%;

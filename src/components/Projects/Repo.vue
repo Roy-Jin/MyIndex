@@ -9,11 +9,11 @@
                 </span>
             </div>
             <div v-if="displayDescription" class="project-description">
-                <TextEllipsis> {{ displayDescription }}</TextEllipsis>
+                <TextEllipsis expand-active> {{ displayDescription }}</TextEllipsis>
             </div>
             <div v-if="repo.homepage" class="project-homepage">
                 <LinkIcon :size="14" />
-                <span class="homepage-text" @click.stop="handleHomepageClick">{{ repo.homepage }}</span>
+                <TextEllipsis @click.stop="handleHomepageClick" :maxLines="1" :text="repo.homepage" />
             </div>
             <div class="project-footer">
                 <div class="project-stats">
@@ -41,20 +41,36 @@
             </div>
         </div>
     </div>
-    <VConfirmDialog v-model:show="dialogShow" :title="dialogTitle" :message="dialogMessage" close-on-click-overlay
-        @confirm="onDialogConfirm" />
+    <ConfirmDialog v-model:show="dialogShow" @confirm="onDialogConfirm" close-on-click-overlay
+        @update:show="isQrShow = false">
+        <template #title>{{ dialogTitle }}</template>
+        {{ t('tips.openLink.message') }}
+        <div v-if="isQrShow">
+            <QR :value="pendingUrl" @dblclick="isQrShow = false" />
+            <div class="w-full h-6 flex items-center justify-center" @click="isQrShow = false">
+                <XIcon class="cursor-target" strokeWidth="5px" />
+            </div>
+        </div>
+        <div v-else class="flex items-center justify-center gap-2 mt-5">
+            <TextEllipsis :max-lines="1" :text="pendingUrl" />
+            <div class="w-6 h-6 cursor-target">
+                <QrCodeIcon @click="isQrShow = true" />
+            </div>
+        </div>
+    </ConfirmDialog>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Star, Code, GitFork, Eye, Clock, BookMarked, LinkIcon } from '@lucide/vue';
-import VConfirmDialog from '@/components/VConfirmDialog.vue';
-import TextEllipsis from '@/components/TextEllipsis.vue';
+import { TextEllipsis, ConfirmDialog, QR } from '@/components/Libs';
 import type { RepoProps } from '@/components/Projects';
 import { formatDate } from '@/utils';
+import { QrCodeIcon, XIcon } from '@lucide/vue';
 
 const { t, locale } = useI18n();
+const isQrShow = ref(false);
 
 const props = defineProps<{
     repo: RepoProps;
@@ -70,13 +86,11 @@ const displayDescription = computed(() => {
 const isAnimating = ref(false);
 const dialogShow = ref(false);
 const dialogTitle = ref('');
-const dialogMessage = ref('');
 const pendingUrl = ref('');
 
 const openDialog = (url: string) => {
     pendingUrl.value = url;
     dialogTitle.value = t('tips.openLink.title');
-    dialogMessage.value = `${t('tips.openLink.message')}\n\n${url}`;
     dialogShow.value = true;
 };
 
@@ -226,14 +240,6 @@ const handleHomepageClick = () => {
     align-items: center;
     gap: 0.4rem;
     color: var(--theme-color);
-    overflow: hidden;
-}
-
-.homepage-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    min-width: 0;
 
     &:hover {
         text-decoration: underline;

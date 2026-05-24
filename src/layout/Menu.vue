@@ -31,7 +31,7 @@ import { useGlobal } from '@/stores/global';
 import { ref, computed, watch, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Sun, Moon, Languages } from '@lucide/vue';
-import Scrollable from '@/components/Scrollable.vue';
+import { Scrollable } from '@/components/Libs';
 import { Switcher, MusicPlayer } from '@/components/Menu';
 import { pushEscHandler, popEscHandler } from '@/utils';
 

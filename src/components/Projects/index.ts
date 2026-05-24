@@ -1,5 +1,5 @@
-export { default as Repo } from './Repo.vue';
-export { default as RepoAll } from './RepoAll.vue';
+export { default as Repo } from "./Repo.vue";
+export { default as RepoAll } from "./RepoAll.vue";
 
 export interface RepoProps {
     name: string;
