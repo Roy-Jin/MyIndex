@@ -12,7 +12,7 @@
                     :transition="{ type: 'spring', stiffness: 400, damping: 35, mass: 0.8 }">
                     <motion.button v-if="closeable" class="v-popup__close" @click="close" @pointerdown.stop
                         :whileHover="{ scale: 1.1 }" :whileTap="{ scale: 0.9 }"
-                        :transition="{ type: 'spring', stiffness: 500, damping: 25 }">
+                        :transition="{ type: 'spring', stiffness: 500, damping: 25 }" :target-title="t('tips.close')">
                         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <line x1="18" y1="6" x2="6" y2="18" />
@@ -30,6 +30,9 @@
 import { computed, watch, onUnmounted } from 'vue';
 import { AnimatePresence, motion } from 'motion-v';
 import { pushEscHandler, popEscHandler } from '@/utils';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = withDefaults(defineProps<{
     show?: boolean;

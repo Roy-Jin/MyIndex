@@ -26,20 +26,20 @@
         </div>
         <div class="bottom">
             <div class="controls">
-                <div class="control order" @click="toggleOrder">
+                <div class="control order" @click="toggleOrder" :target-title="orderTitle">
                     <component :is="orderIcon" color="var(--text-color)" />
                 </div>
-                <div class="control prev" @click="previousSong">
+                <div class="control prev" @click="previousSong" :target-title="t('music.prev')">
                     <SkipBack color="var(--text-color)" />
                 </div>
-                <div class="control play" :class="{ 'playing': global.music.isPlaying }" @click="togglePlay">
+                <div class="control play" :class="{ 'playing': global.music.isPlaying }" @click="togglePlay" :target-title="playTitle">
                     <Play v-if="!global.music.isPlaying" class="icon" :fill="'var(--play-color)'" />
                     <Pause v-else class="icon" :fill="'var(--play-color)'" />
                 </div>
-                <div class="control next" @click="nextSong">
+                <div class="control next" @click="nextSong" :target-title="t('music.next')">
                     <SkipForward color="var(--text-color)" />
                 </div>
-                <div class="control volume" @click="toggleVolume">
+                <div class="control volume" @click="toggleVolume" :target-title="volumeTitle">
                     <component :is="volumeIcon" color="var(--text-color)" />
                 </div>
             </div>
@@ -82,6 +82,21 @@ const duration = ref(0);
 const lyrics = ref<{ content: string; timestamp: number }[]>([]);
 const currentVolume = ref(0.6);
 const isStaticMode = ref(true);
+const playTitle = computed(() => global.music.isPlaying ? t('music.pause') : t('music.play'));
+const orderTitle = computed(() => {
+    switch (global.music.order) {
+        case 'random': return t('music.random');
+        case 'single': return t('music.single');
+        default: return t('music.repeat');
+    }
+});
+const volumeTitle = computed(() => {
+    switch (currentVolume.value) {
+        case 0.3: return "30%";
+        case 0.6: return "60%";
+        case 1: return "100%";
+    }
+});
 
 const emit = defineEmits(["play", "pause"]);
 

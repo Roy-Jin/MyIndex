@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { gsap } from 'gsap';
-import { onMounted, onBeforeUnmount, ref, useTemplateRef, watch } from 'vue';
+import { onMounted, onBeforeUnmount, ref, useTemplateRef, watch, nextTick } from 'vue';
 
 interface TargetCursorProps {
-    targetSelector?: string;
+    targetSelector?: string[];
+    titleSelector?: string;
     spinDuration?: number;
     hideDefaultCursor?: boolean;
 }
@@ -11,14 +12,18 @@ interface TargetCursorProps {
 const showCursor = ref(false);
 
 const props = withDefaults(defineProps<TargetCursorProps>(), {
-    targetSelector: '.cursor-target, button, .control',
+    targetSelector: () => ['.cursor-target', 'button', '.control'],
+    titleSelector: 'target-title',
     spinDuration: 2,
     hideDefaultCursor: true
 });
 
 const cursorRef = useTemplateRef('cursorRef');
+const titleRef = useTemplateRef('titleRef');
 const cornersRef = ref<NodeListOf<HTMLDivElement> | null>(null);
 const spinTl = ref<gsap.core.Timeline | null>(null);
+const currentTitle = ref('');
+const showTitle = ref(false);
 
 const constants = {
     borderWidth: 3,
@@ -35,6 +40,78 @@ const moveCursor = (x: number, y: number) => {
         y,
         duration: 0.1,
         ease: 'power3.out'
+    });
+};
+
+const titleGap = 8;
+const titleScreenPadding = 12;
+
+const calcTitlePosition = (targetRect: DOMRect, cursorX?: number, cursorY?: number) => {
+    if (!titleRef.value) return { left: 0, top: 0 };
+
+    const titleWidth = titleRef.value.offsetWidth;
+    const titleHeight = titleRef.value.offsetHeight;
+
+    if (!titleWidth || !titleHeight) return { left: 0, top: 0 };
+
+    let left = targetRect.right;
+    let top = targetRect.top - titleGap - titleHeight;
+
+    if (top < titleScreenPadding) {
+        top = targetRect.bottom + titleGap;
+    }
+    if (left + titleWidth > window.innerWidth - titleScreenPadding) {
+        left = targetRect.left - titleWidth;
+    }
+
+    if (cursorX !== undefined && cursorY !== undefined) {
+        const targetCenterX = targetRect.left + targetRect.width / 2;
+        const targetCenterY = targetRect.top + targetRect.height / 2;
+        const parallaxStrength = 0.35;
+        left += (cursorX - targetCenterX) * parallaxStrength;
+        top += (cursorY - targetCenterY) * parallaxStrength;
+    }
+
+    return { left, top };
+};
+
+const showTargetTitle = (text: string, targetRect: DOMRect, cursorX?: number, cursorY?: number) => {
+    currentTitle.value = text;
+    showTitle.value = true;
+
+    nextTick(() => {
+        if (!titleRef.value) return;
+        gsap.killTweensOf(titleRef.value);
+
+        const pos = calcTitlePosition(targetRect, cursorX, cursorY);
+
+        gsap.set(titleRef.value, {
+            x: pos.left,
+            y: pos.top,
+            opacity: 0,
+            scale: 0.8
+        });
+        gsap.to(titleRef.value, {
+            opacity: 1,
+            scale: 1,
+            duration: 0.2,
+            ease: 'back.out(1.7)'
+        });
+    });
+};
+
+const hideTargetTitle = () => {
+    if (!titleRef.value || !showTitle.value) return;
+    gsap.killTweensOf(titleRef.value);
+    gsap.to(titleRef.value, {
+        opacity: 0,
+        scale: 0.8,
+        duration: 0.15,
+        ease: 'power2.in',
+        onComplete: () => {
+            showTitle.value = false;
+            currentTitle.value = '';
+        }
     });
 };
 
@@ -56,6 +133,14 @@ const setupAnimation = () => {
     let currentLeaveHandler: (() => void) | null = null;
     let isAnimatingToTarget = false;
     let resumeTimeout: ReturnType<typeof setTimeout> | null = null;
+    let titleObserver: MutationObserver | null = null;
+
+    const cleanupObserver = () => {
+        if (titleObserver) {
+            titleObserver.disconnect();
+            titleObserver = null;
+        }
+    };
 
     const cleanupTarget = (target: Element) => {
         if (currentTargetMove) {
@@ -66,6 +151,7 @@ const setupAnimation = () => {
         }
         currentTargetMove = null;
         currentLeaveHandler = null;
+        cleanupObserver();
     };
 
     const resetTargetState = () => {
@@ -76,6 +162,8 @@ const setupAnimation = () => {
         isAnimatingToTarget = false;
 
         cleanupTarget(prevTarget);
+        cleanupObserver();
+        hideTargetTitle();
 
         if (cornersRef.value) {
             const corners = Array.from(cornersRef.value);
@@ -151,7 +239,19 @@ const setupAnimation = () => {
 
     createSpinTimeline();
 
-    const moveHandler = (e: MouseEvent) => moveCursor(e.clientX, e.clientY);
+    const moveHandler = (e: MouseEvent) => {
+        moveCursor(e.clientX, e.clientY);
+        if (titleRef.value && showTitle.value && activeTarget && activeTarget.hasAttribute(props.titleSelector)) {
+            const targetRect = activeTarget.getBoundingClientRect();
+            const pos = calcTitlePosition(targetRect, e.clientX, e.clientY);
+            gsap.to(titleRef.value, {
+                x: pos.left,
+                y: pos.top,
+                duration: 0.1,
+                ease: 'power3.out'
+            });
+        }
+    };
     window.addEventListener('mousemove', moveHandler);
 
     const enterHandler = (e: MouseEvent) => {
@@ -163,10 +263,10 @@ const setupAnimation = () => {
 
         const allTargets: Element[] = [];
         let current = directTarget;
-        const targets = props.targetSelector.split(',') as string[];
+        const targets = props.targetSelector;
         while (current && current !== document.body) {
             for (let i = 0; i < targets.length; i++) {
-                const selector = targets[i]?.trim();
+                const selector = targets[i];
                 if (selector && current.matches(selector)) {
                     allTargets.push(current);
                 }
@@ -189,6 +289,33 @@ const setupAnimation = () => {
         }
 
         activeTarget = target;
+        const titleAttr = target.getAttribute(props.titleSelector);
+        if (titleAttr) {
+            const targetRect = target.getBoundingClientRect();
+            showTargetTitle(titleAttr, targetRect, e.clientX, e.clientY);
+        } else {
+            hideTargetTitle();
+        }
+
+        cleanupObserver();
+        titleObserver = new MutationObserver(() => {
+            if (!cursorRef.value || activeTarget !== target) return;
+            const newTitle = target.getAttribute(props.titleSelector);
+            if (newTitle) {
+                const targetRect = target.getBoundingClientRect();
+                const cursorRect = cursorRef.value!.getBoundingClientRect();
+                const cursorX = cursorRect.left + cursorRect.width / 2;
+                const cursorY = cursorRect.top + cursorRect.height / 2;
+                showTargetTitle(newTitle, targetRect, cursorX, cursorY);
+            } else {
+                hideTargetTitle();
+            }
+        });
+        titleObserver.observe(target, {
+            attributes: true,
+            attributeFilter: [props.titleSelector]
+        });
+
         const corners = Array.from(cornersRef.value);
         corners.forEach(corner => {
             gsap.killTweensOf(corner);
@@ -243,10 +370,10 @@ const setupAnimation = () => {
             }
 
             const tl = gsap.timeline();
-            const corners = [tlc, trc, brc, blc];
+            const cornerElements = [tlc, trc, brc, blc];
             const offsets = [tlOffset, trOffset, brOffset, blOffset];
 
-            corners.forEach((corner, index) => {
+            cornerElements.forEach((corner, index) => {
                 tl.to(
                     corner as HTMLElement,
                     {
@@ -302,6 +429,8 @@ const setupAnimation = () => {
             cleanupTarget(activeTarget);
         }
 
+        cleanupObserver();
+
         if (resumeTimeout) {
             clearTimeout(resumeTimeout);
             resumeTimeout = null;
@@ -316,6 +445,12 @@ const setupAnimation = () => {
         if (cornersRef.value) {
             gsap.killTweensOf(Array.from(cornersRef.value));
         }
+        if (titleRef.value) {
+            gsap.killTweensOf(titleRef.value);
+        }
+
+        showTitle.value = false;
+        currentTitle.value = '';
 
         if (cursorRef.value) {
             gsap.set(cursorRef.value, {
@@ -380,5 +515,10 @@ watch(
             :style="{ willChange: 'transform' }" />
         <div class="top-1/2 left-1/2 absolute border-[3px] border-white border-t-0 border-r-0 w-3 h-3 -translate-x-[150%] translate-y-1/2 target-cursor-corner transform"
             :style="{ willChange: 'transform' }" />
+    </div>
+    <div ref="titleRef" v-show="showTitle"
+        class="top-0 left-0 z-[9999] fixed pointer-events-none whitespace-nowrap px-3 py-1.5 rounded-lg text-sm font-medium backdrop-blur-xl opacity-0 transform"
+        :style="{ willChange: 'transform', background: 'var(--text-color)', color: 'var(--main-bg)' }">
+        {{ currentTitle }}
     </div>
 </template>

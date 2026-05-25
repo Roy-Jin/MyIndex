@@ -8,7 +8,17 @@
     "expand": "More",
     "collapse": "Less",
     "confirm": "Confirm",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "show": "Show",
+    "hide": "Hide",
+    "open": "Open",
+    "close": "Close",
+    "qr": {
+      "title": "QR Code",
+      "show": "Show QR",
+      "hide": "Hide QR",
+      "dbcHide": "Dbclick to hide QR"
+    }
   },
   "subtitle": "Hi, welcome to my personal website!",
   "quote": "Coffee is bitter, Life is sweet.",
@@ -20,6 +30,14 @@
     }
   },
   "music": {
+    "title": "Music",
+    "play": "Play",
+    "pause": "Pause",
+    "prev": "Previous",
+    "next": "Next",
+    "random": "Random",
+    "single": "Single",
+    "repeat": "Repeat",
     "noLyric": "No words, yet the music speaks."
   },
   "theme": {

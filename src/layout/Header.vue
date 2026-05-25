@@ -14,9 +14,9 @@
             <div class="menu-btn">
                 <component v-if="global.music.audio" :is="Disc3Icon" @click="tooglePlayPause" :size="24"
                     :class="{ 'play': global.music.isPlaying, 'pause': !global.music.isPlaying }" class="cursor-target"
-                    :color="global.music.themeColor" />
+                    :color="global.music.themeColor" :target-title="t('music.title') + ': ' + global.music.name" />
                 <component :is="menuRef?.isOpen ? XIcon : MenuIcon" strokeWidth="3px" @click="toggleMenu" :size="32"
-                    color="var(--theme-color)" class="cursor-target" />
+                    color="var(--theme-color)" class="cursor-target" :target-title="t('menu.title')" />
             </div>
         </div>
     </div>
@@ -28,7 +28,8 @@ import { computed, defineAsyncComponent, nextTick, onMounted, onUnmounted, ref }
 import { useEnv } from '@/stores/env';
 import { useGlobal } from '@/stores/global';
 import { MenuIcon, XIcon, Disc3Icon } from '@lucide/vue';
-const Menu = defineAsyncComponent(() => import('@/layout/Menu.vue'));
+import { useI18n } from 'vue-i18n';
+import Menu from '@/layout/Menu.vue';
 
 const env = useEnv();
 const global = useGlobal();
@@ -37,6 +38,7 @@ const menuRef = ref<any | null>(null);
 const height = ref(0);
 const isShow = ref(true);
 let resizeObserver: ResizeObserver | null = null;
+const { t } = useI18n();
 
 const toggleMenu = () => {
     menuRef.value?.toggle()

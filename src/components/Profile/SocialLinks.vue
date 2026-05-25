@@ -1,7 +1,7 @@
 <template>
     <div class="social-links">
         <div v-for="link in socialLinks" :key="link.name" @click="handleClick(link.href)"
-            :style="{ '--link-color': link.color }" class="link cursor-target">
+            :style="{ '--link-color': link.color }" class="link cursor-target" :target-title="link.name">
             <Icon :icon="link.icon" :fill="link.color" />
         </div>
     </div>
@@ -10,14 +10,14 @@
         <template #title>{{ dialogTitle }}</template>
         {{ t('tips.openLink.message') }}
         <div v-if="isQrShow">
-            <QR :value="pendingUrl" @dblclick="isQrShow = false" />
+            <QR :value="pendingUrl" @dblclick="isQrShow = false" :target-title="t('tips.qr.dbcHide')" />
             <div class="w-full h-6 flex items-center justify-center" @click="isQrShow = false">
-                <XIcon class="cursor-target" strokeWidth="5px" />
+                <XIcon class="cursor-target" strokeWidth="5px" :target-title="t('tips.qr.hide')" />
             </div>
         </div>
         <div v-else class="flex items-center justify-center gap-2 mt-5">
             <TextEllipsis :max-lines="1" :text="pendingUrl" />
-            <div class="w-6 h-6 cursor-target">
+            <div class="w-6 h-6 cursor-target" :target-title="t('tips.qr.show')">
                 <QrCodeIcon @click="isQrShow = true" />
             </div>
         </div>

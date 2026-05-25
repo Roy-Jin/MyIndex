@@ -1,6 +1,6 @@
 <template>
     <motion.div drag :dragConstraints="{ left: 0, right: 0, top: 0, bottom: 0 }" :dragElastic="1"
-        class="avatar-container cursor-target">
+        class="avatar-container cursor-target" :target-title="kaomoji">
         <svg class="avatar" width="100%" height="100%" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
             <defs>
                 <clipPath id="circleClip">
@@ -28,8 +28,25 @@
 <script setup lang='ts'>
 import { useEnv } from '@/stores/env';
 import { motion } from 'motion-v';
+import { onMounted, onUnmounted, ref } from 'vue';
 
 const env = useEnv();
+const kaomoji = ref("");
+
+const pickNextEmo = () => {
+    const candidates = env.kaomoji.values.filter(e => e !== kaomoji.value);
+    if (candidates.length === 0) return;
+    kaomoji.value = candidates[Math.floor(Math.random() * candidates.length)] || "";
+};
+
+let intervalId: ReturnType<typeof setInterval>;
+
+onMounted(() => {
+    intervalId = setInterval(pickNextEmo, env.kaomoji.timeout);
+})
+onUnmounted(() => {
+    clearInterval(intervalId);
+})
 </script>
 
 <style scoped>
