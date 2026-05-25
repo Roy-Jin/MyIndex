@@ -1,6 +1,6 @@
 <template>
     <div class="quote">
-        <Icon icon="quoteLeft" :fill="iconColor || 'var(--theme-color)'" />
+        <Icon icon="quoteLeft" fill="var(--theme-color)" width="1.5rem" />
         <p class="quote-text">{{ quote }}</p>
     </div>
 </template>
@@ -10,7 +10,6 @@ import { Icon } from '@/components/Libs';
 
 const props = defineProps<{
     quote: string;
-    iconColor?: string;
 }>();
 </script>
 
@@ -24,12 +23,6 @@ const props = defineProps<{
     flex-direction: row;
     font-family: "仓耳逍遥行书", "Playball";
     background: linear-gradient(to right bottom, var(--theme-color-light), transparent);
-}
-
-.quote :deep(svg) {
-    width: 1.5rem;
-    color: var(--theme-color);
-    margin-right: 1rem;
 }
 
 .quote-text {

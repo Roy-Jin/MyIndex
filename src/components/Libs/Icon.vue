@@ -1,5 +1,5 @@
 <template>
-    <component :is="_icon" />
+    <component :is="_icon" :style="{ fill: fill, width: width, height: height }" />
 </template>
 
 <script setup lang='ts'>
@@ -12,8 +12,9 @@ import quoteLeft from '@/components/Libs/Icons/quote-left.vue';
 
 const props = defineProps<{
     icon: string,
-    color?: string,
-    size?: number,
+    fill?: string,
+    width?: string,
+    height?: string,
 }>();
 
 const _icon = computed(() => {
