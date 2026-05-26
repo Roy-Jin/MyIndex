@@ -95,6 +95,7 @@ const volumeTitle = computed(() => {
         case 0.3: return "30%";
         case 0.6: return "60%";
         case 1: return "100%";
+        default: return `${Math.round(currentVolume.value * 100)}%`;
     }
 });
 

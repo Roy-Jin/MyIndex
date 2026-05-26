@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang='ts'>
-import { computed, defineAsyncComponent, nextTick, onMounted, onUnmounted, ref } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 import { useEnv } from '@/stores/env';
 import { useGlobal } from '@/stores/global';
 import { MenuIcon, XIcon, Disc3Icon } from '@lucide/vue';

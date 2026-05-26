@@ -37,7 +37,6 @@ const defaultOptions: Options = {
     disableTouch: false, // 不禁止 touch 事件
     disableMouse: false, // 不禁止 mouse 事件
     mouseWheel: true,    // 允许滚轮事件
-    scrollbar: undefined,     // 不显示滚动条
     ...props.options
 }
 
@@ -58,7 +57,7 @@ onUnmounted(() => {
 
 watch(
     () => props.options,
-    (newOpts) => {
+    () => {
         if (bsInstance) {
             bsInstance.refresh()
         }

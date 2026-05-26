@@ -36,11 +36,10 @@
 <script setup lang="ts">
 import { motion, AnimatePresence } from 'motion-v';
 import { useI18n } from 'vue-i18n';
-import { watch, onUnmounted, ref } from 'vue';
+import { watch, onUnmounted } from 'vue';
 import { pushEscHandler, popEscHandler } from '@/utils';
 
 const { t } = useI18n();
-const overlayRef = ref();
 
 const props = withDefaults(defineProps<{
     show?: boolean;

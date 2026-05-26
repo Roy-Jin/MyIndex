@@ -62,8 +62,6 @@ const props = withDefaults(defineProps<MediaScreenProps>(), {
     gradientHeight: 0,
     gradientFrom: 'transparent',
     gradientTo: 'transparent',
-    topGradientStyle: undefined,
-    bottomGradientStyle: undefined,
     mediaScreen: () => []
 });
 
