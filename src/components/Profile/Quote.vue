@@ -23,6 +23,7 @@ const props = defineProps<{
     flex-direction: row;
     font-family: "仓耳逍遥行书", "Playball";
     background: linear-gradient(to right bottom, var(--theme-color-light), transparent);
+    backdrop-filter: var(--filter-blur);
 }
 
 .quote-text {

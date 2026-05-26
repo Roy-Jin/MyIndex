@@ -32,7 +32,8 @@
                 <div class="control prev" @click="previousSong" :target-title="t('music.prev')">
                     <SkipBack color="var(--text-color)" />
                 </div>
-                <div class="control play" :class="{ 'playing': global.music.isPlaying }" @click="togglePlay" :target-title="playTitle">
+                <div class="control play" :class="{ 'playing': global.music.isPlaying }" @click="togglePlay"
+                    :target-title="playTitle">
                     <Play v-if="!global.music.isPlaying" class="icon" :fill="'var(--play-color)'" />
                     <Pause v-else class="icon" :fill="'var(--play-color)'" />
                 </div>
@@ -45,7 +46,7 @@
             </div>
         </div>
         <audio ref="audioRef" :src="global.music.url" @loadedmetadata="onLoadedMetadata" @timeupdate="updateProgress"
-            @pause="upPause" @play="upPlay" @ended="nextSong">
+            @pause="upPause" @play="upPlay" @ended="nextSong" crossorigin="anonymous">
         </audio>
     </div>
 </template>
@@ -87,7 +88,7 @@ const orderTitle = computed(() => {
     switch (global.music.order) {
         case 'random': return t('music.random');
         case 'single': return t('music.single');
-        default: return t('music.repeat');
+        default: return t('music.loop');
     }
 });
 const volumeTitle = computed(() => {

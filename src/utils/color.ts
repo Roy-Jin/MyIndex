@@ -19,3 +19,7 @@ export const setCSSVariable = (
   const target = element || document.documentElement;
   target.style.setProperty(name, value);
 };
+
+export const getCSSColor = (varName: string): string => {
+    return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+};

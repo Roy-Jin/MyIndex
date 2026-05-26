@@ -13,7 +13,8 @@
             </div>
             <div v-if="repo.homepage" class="project-homepage">
                 <LinkIcon :size="14" />
-                <TextEllipsis @click.stop="handleHomepageClick" :maxLines="1" :text="repo.homepage" />
+                <TextEllipsis @click.stop="handleHomepageClick" :maxLines="1" :text="repo.homepage"
+                    class="cursor-target" />
             </div>
             <div class="project-footer">
                 <div class="project-stats">

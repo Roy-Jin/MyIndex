@@ -1,6 +1,7 @@
 <template>
     <motion.div drag :dragConstraints="{ left: 0, right: 0, top: 0, bottom: 0 }" :dragElastic="1"
-        class="avatar-container cursor-target" :target-title="kaomoji">
+        class="avatar-container cursor-target" :target-title="kaomoji"
+        @mouseenter="startCycling" @mouseleave="stopCycling">
         <svg class="avatar" width="100%" height="100%" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
             <defs>
                 <clipPath id="circleClip">
@@ -32,6 +33,7 @@ import { onMounted, onUnmounted, ref } from 'vue';
 
 const env = useEnv();
 const kaomoji = ref("");
+let intervalId: ReturnType<typeof setInterval>;
 
 const pickNextEmo = () => {
     const candidates = env.kaomoji.values.filter(e => e !== kaomoji.value);
@@ -39,19 +41,26 @@ const pickNextEmo = () => {
     kaomoji.value = candidates[Math.floor(Math.random() * candidates.length)] || "";
 };
 
-let intervalId: ReturnType<typeof setInterval>;
+const startCycling = () => {
+    stopCycling();
+    intervalId = setInterval(pickNextEmo, env.kaomoji.timeout);
+};
+
+const stopCycling = () => {
+    clearInterval(intervalId);
+};
 
 onMounted(() => {
-    intervalId = setInterval(pickNextEmo, env.kaomoji.timeout);
-})
+    pickNextEmo();
+});
+
 onUnmounted(() => {
-    clearInterval(intervalId);
-})
+    stopCycling();
+});
 </script>
 
 <style scoped>
 .avatar-container {
-    z-index: 2;
     max-width: 66%;
     border-radius: 50%;
     overflow: hidden;

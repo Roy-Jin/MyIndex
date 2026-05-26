@@ -28,12 +28,14 @@ const { t } = useI18n();
 }
 
 .base {
+    z-index: 2;
     padding: 1rem;
     display: flex;
     align-items: center;
     flex-direction: column;
     border-radius: var(--border-radius);
     background: radial-gradient(ellipse at 50% 80%, var(--theme-color), transparent);
+    backdrop-filter: var(--filter-blur);
 }
 
 .name {

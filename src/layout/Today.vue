@@ -91,7 +91,8 @@ onUnmounted(() => {
     display: flex;
     justify-content: center;
     flex-direction: column;
-    background: radial-gradient(ellipse at 33% 25%, var(--theme-color), transparent)
+    background: radial-gradient(ellipse at 33% 25%, var(--theme-color), transparent);
+    backdrop-filter: var(--filter-blur);
 }
 
 #date {

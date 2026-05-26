@@ -1,4 +1,5 @@
 <template>
+    <AudioVisualizer />
     <Scrollable ref="scrollRef" :style="{ overflow: 'unset' }">
         <div class="wrapper">
             <Profile />
@@ -11,7 +12,7 @@
 </template>
 
 <script setup lang='ts'>
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import { useEnv } from '@/stores/env';
 import { useGlobal } from '@/stores/global';
 import {
@@ -20,16 +21,14 @@ import {
     Projects
 } from '@/layout';
 import { Scrollable } from '@/components/Libs';
+import { AudioVisualizer } from '@/components/Menu';
 
 const env = useEnv();
 const global = useGlobal();
-const scrollRef = ref<any>(null);
 
 onMounted(async () => {
     await global.loadSayings(env.sayings);
     await global.loadGhRepos(env.gh_repos);
-    scrollRef.value?.refresh();
-    scrollRef.value?.scrollTo(0, 0);
     document.getElementById('loading')?.setAttribute('data-hidden', 'TRUE');
 });
 </script>

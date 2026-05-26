@@ -1,6 +1,6 @@
 <template>
     <div class="projects">
-        <Repo v-if="filteredRepos[0]" :repo="filteredRepos[0]" />
+        <Repo v-if="filteredRepos[0]" :repo="filteredRepos[0]" style="backdrop-filter: var(--filter-blur);"/>
         <button class="show-more-btn cursor-target" @click="repoAllRef?.showPopup">
             <FolderGit2 />
             {{ t('projects.showMore') }}
@@ -49,5 +49,6 @@ const filteredRepos = computed(() => {
     border: 2px solid var(--theme-color);
     border-radius: var(--border-radius);
     background-color: var(--theme-color-light);
+    backdrop-filter: var(--filter-blur);
 }
 </style>

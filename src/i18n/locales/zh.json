@@ -37,7 +37,7 @@
     "next": "下一首",
     "random": "随机播放",
     "single": "单曲循环",
-    "repeat": "重复播放",
+    "loop": "循环播放",
     "noLyric": "此曲无词，自有心声。"
   },
   "theme": {

@@ -7,11 +7,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, provide, onMounted, computed, defineAsyncComponent } from 'vue'
+import { ref, provide, onMounted, computed } from 'vue'
 import { useGlobal } from './stores/global'
 import { setDocumentTheme } from '@/utils'
 import { TargetCursor } from '@/components/Libs';
-const Header = defineAsyncComponent(() => import('@/layout/Header.vue'))
+import Header from '@/layout/Header.vue'
 
 const headerRef = ref<InstanceType<typeof Header> | null>(null)
 const global = useGlobal()
@@ -27,6 +27,7 @@ provide('header', {
 
 onMounted(() => {
     document.oncontextmenu = () => false;
+    document.addEventListener('keydown', (e) => e.key === 'F12' && !import.meta.env.DEV && e.preventDefault());
     setDocumentTheme(global.theme);
     useGlobal().initLang();
 })
