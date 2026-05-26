@@ -68,12 +68,10 @@ const props = withDefaults(defineProps<MediaScreenProps>(), {
 const currentScreenWidth = ref(window.innerWidth);
 const activeMediaRule = ref<Partial<CounterProps> | null>(null);
 
-// 媒体查询处理函数
 const updateMediaQuery = () => {
     const screenWidth = window.innerWidth;
     currentScreenWidth.value = screenWidth;
 
-    // 找到匹配当前屏幕宽度的媒体规则
     let matchedRule: Partial<CounterProps> | null = null;
     for (const rule of props.mediaScreen) {
         if (screenWidth <= rule.maxWidth) {
@@ -85,7 +83,6 @@ const updateMediaQuery = () => {
     activeMediaRule.value = matchedRule;
 };
 
-// 获取属性值 - 优先使用媒体查询规则
 const getPropValue = <T>(propName: keyof CounterProps, defaultValue: T): T => {
     if (activeMediaRule.value && activeMediaRule.value[propName] !== undefined) {
         return activeMediaRule.value[propName] as T;
@@ -93,7 +90,6 @@ const getPropValue = <T>(propName: keyof CounterProps, defaultValue: T): T => {
     return (props as any)[propName] ?? defaultValue;
 };
 
-// 计算属性 - 根据媒体查询更新
 const fontSize = computed(() => getPropValue('fontSize', 16));
 const padding = computed(() => getPropValue('padding', 0));
 const places = computed(() => getPropValue('places', [10, 1]));
@@ -173,7 +169,6 @@ watch(
     }
 );
 
-// 监听媒体查询变化
 watch(
     () => currentScreenWidth.value,
     () => {
@@ -210,10 +205,9 @@ const getDigitPosition = (place: number, digit: number): number => {
     return position;
 };
 
-// 添加窗口大小变化监听器
 onMounted(() => {
     window.addEventListener('resize', updateMediaQuery);
-    updateMediaQuery(); // 初始化
+    updateMediaQuery();
 });
 
 onUnmounted(() => {

@@ -13,7 +13,6 @@ import ObserveDOM from '@better-scroll/observe-dom';
 import ObserveImage from '@better-scroll/observe-image';
 import ScrollBar from '@better-scroll/scroll-bar';
 
-// Props：允许外部传入配置
 const props = withDefaults(
     defineProps<{
         options?: Options
@@ -65,7 +64,6 @@ watch(
     { deep: true }
 )
 
-// 暴露方法给父组件
 defineExpose({
     refresh() {
         bsInstance?.refresh()
