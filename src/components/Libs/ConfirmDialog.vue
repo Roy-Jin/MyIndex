@@ -4,10 +4,15 @@
             <motion.div v-if="show" key="v-dialog-overlay" class="v-dialog-overlay" @click="onOverlayClick"
                 :initial="{ opacity: 0 }" :animate="{ opacity: 1 }" :exit="{ opacity: 0 }"
                 :transition="{ duration: 0.2, ease: 'easeInOut' }">
-                <motion.div key="v-dialog" drag :dragConstraints="{ top: 0, bottom: 0, left: 0, right: 0 }"
-                    class="v-dialog" @click.stop :initial="{ scale: 0.8, opacity: 0, y: 20 }"
-                    :animate="{ scale: 1, opacity: 1, y: 0 }" :exit="{ scale: 0.8, opacity: 0, y: 20 }"
-                    :transition="{ type: 'spring', stiffness: 450, damping: 32, mass: 0.7 }">
+                <motion.div key="v-dialog" class="v-dialog" @click.stop :initial="{ scale: 0.8, opacity: 0, y: 20 }"
+                    :animate="{ scale: 1, opacity: 1, y: 0 }" :exit="{ scale: 0.8, opacity: 0, y: 20 }" :transition="{
+                        default: {
+                            duration: 0.2, ease: 'easeInOut',
+                        },
+                        layout: {
+                            type: 'spring', visualDuration: 0.2, bounce: 0.5
+                        }
+                    }" layout>
                     <div v-if="title || $slots.title" class="v-dialog__title">
                         <slot name="title">{{ title }}</slot>
                     </div>
@@ -36,7 +41,7 @@
 <script setup lang="ts">
 import { motion, AnimatePresence } from 'motion-v';
 import { useI18n } from 'vue-i18n';
-import { watch, onUnmounted } from 'vue';
+import { ref, watch, onUnmounted } from 'vue';
 import { pushEscHandler, popEscHandler } from '@/utils';
 
 const { t } = useI18n();
@@ -69,8 +74,11 @@ const emit = defineEmits<{
     'cancel': [];
 }>();
 
+const isClosing = ref(false);
+
 watch(() => props.show, (val) => {
     if (val) {
+        isClosing.value = false;
         pushEscHandler(onCancel);
     } else {
         popEscHandler();
@@ -90,16 +98,21 @@ const hideDialog = () => {
 };
 
 const onConfirm = () => {
+    if (isClosing.value) return;
+    isClosing.value = true;
     emit('confirm');
     hideDialog();
 };
 
 const onCancel = () => {
+    if (isClosing.value) return;
+    isClosing.value = true;
     emit('cancel');
     hideDialog();
 };
 
 const onOverlayClick = () => {
+    if (isClosing.value) return;
     if (props.closeOnClickOverlay) {
         onCancel();
     }
@@ -124,6 +137,7 @@ defineExpose({
     display: flex;
     align-items: center;
     justify-content: center;
+    will-change: opacity;
 }
 
 .v-dialog {
@@ -133,6 +147,7 @@ defineExpose({
     width: 20rem;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     overflow: hidden;
+    will-change: transform, opacity;
 }
 
 .v-dialog__title {

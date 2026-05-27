@@ -383,6 +383,7 @@ onUnmounted(() => {
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     background: color-mix(in srgb, var(--main-bg), var(--theme-dark) 68%);
     box-shadow: 0 8px 32px color-mix(in srgb, var(--theme-color) 15%, transparent);
+    will-change: transform;
 }
 
 .top {
@@ -400,7 +401,6 @@ onUnmounted(() => {
     width: 110px;
     height: 110px;
     flex-shrink: 0;
-    cursor: pointer;
 }
 
 .vinyl-disc {
@@ -418,6 +418,7 @@ onUnmounted(() => {
 
 .vinyl-disc.rotating {
     animation: rotate 20s linear infinite;
+    will-change: transform;
 }
 
 .vinyl-disc.hidden {
@@ -441,6 +442,7 @@ onUnmounted(() => {
 
 .cover-container img.rotating {
     animation: rotate 20s linear infinite;
+    will-change: transform;
 }
 
 .cover-container img.static-mode {
@@ -534,7 +536,6 @@ onUnmounted(() => {
     height: 6px;
     background: var(--theme-dark);
     border-radius: 3px;
-    cursor: pointer;
 }
 
 .progress {
@@ -574,7 +575,6 @@ onUnmounted(() => {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    cursor: pointer;
 }
 
 .control.play {
@@ -592,7 +592,7 @@ onUnmounted(() => {
 
 @keyframes rotate {
     to {
-        transform: rotate(360deg);
+        transform: rotate(360deg) translateZ(0);
     }
 }
 

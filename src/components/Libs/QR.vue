@@ -1,17 +1,13 @@
 <template>
-    <motion.div :key="props.value" :initial="{ opacity: 0, scale: 0.6, filter: 'blur(8px)' }"
-        :animate="{ opacity: 1, scale: 1, filter: 'blur(0px)' }"
-        :transition="{ type: 'spring', stiffness: 180, damping: 22, mass: 0.7 }" v-html="qrCode"
-        class="qr-code cursor-target" :style="{
-            '--qr-fill': props.opts?.color || 'var(--text-color)',
-            '--qr-bg': props.opts?.background || 'transparent'
-        }"></motion.div>
+    <div v-html="qrCode" class="qr-code cursor-target" :style="{
+        '--qr-fill': props.opts?.color || 'var(--text-color)',
+        '--qr-bg': props.opts?.background || 'transparent'
+    }"></div>
 </template>
 
 <script setup lang='ts'>
 import { onMounted, ref, watch } from 'vue';
 import encodeQR, { type QrOpts, type SvgQrOpts } from 'qr';
-import { motion } from 'motion-v';
 
 type QrComponentOpts = QrOpts & SvgQrOpts & {
     color?: string;

@@ -3,7 +3,7 @@
         <div class="flex overflow-hidden" :style="counterStyles">
             <div v-for="place in places" :key="place" class="relative w-[1ch] tabular-nums" :style="digitStyles">
                 <Motion v-for="digit in 10" :key="digit - 1" tag="span"
-                    class="absolute top-0 left-0 w-full h-full flex items-center justify-center"
+                    class="absolute top-0 left-0 w-full h-full flex items-center justify-center will-change-transform"
                     :animate="{ y: getDigitPosition(place, digit - 1) }">
                     {{ digit - 1 }}
                 </Motion>

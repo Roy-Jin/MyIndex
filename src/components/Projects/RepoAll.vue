@@ -11,10 +11,10 @@
             <Scrollable ref="scrollableRef" :options="{ scrollbar: true }">
                 <div class="repos-grid">
                     <AnimatePresence mode="popLayout">
-                        <Motion v-for="repo in filteredRepos" :key="repo.html_url" :layout="true"
-                            :initial="{ opacity: 0, scale: 0.8, y: 20 }" :animate="{ opacity: 1, scale: 1, y: 0 }"
-                            :exit="{ opacity: 0, scale: 0.8, y: -20 }"
-                            :transition="{ type: 'spring', stiffness: 400, damping: 30 }">
+                        <Motion v-for="repo in filteredRepos" :key="repo.html_url"
+                            :initial="{ opacity: 0, scale: 0.8, y: '100%' }"
+                            :animate="{ opacity: 1, scale: 1, y: '0%' }" :exit="{ opacity: 0, scale: 0, y: '100%' }"
+                            :transition="{ type: 'spring', visualDuration: 0.3, bounce: 0.2 }" layout>
                             <Repo :repo="repo" class="repo-item" />
                         </Motion>
                     </AnimatePresence>
@@ -150,6 +150,7 @@ defineExpose({
 
 .repo-item {
     height: 100%;
+    will-change: transform, opacity;
 }
 
 .no-results {

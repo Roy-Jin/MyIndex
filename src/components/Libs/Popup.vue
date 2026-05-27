@@ -1,36 +1,25 @@
 <template>
-    <Teleport :to="teleportTo">
-        <AnimatePresence>
-            <motion.div v-if="show" key="v-popup-overlay" class="v-popup-overlay" @click="onOverlayClick"
-                :initial="{ opacity: 0 }" :animate="{ opacity: 1 }" :exit="{ opacity: 0 }"
-                :transition="{ duration: 0.25, ease: 'easeInOut' }">
-                <motion.div :key="`v-popup-${position}`" class="v-popup"
-                    :class="[`v-popup--${position}`, { 'v-popup--round': round }]" :style="popupStyle" @click.stop
-                    :initial="position === 'bottom' ? { y: '100%' } : position === 'top' ? { y: '-100%' } : { scale: 0.85 }"
-                    :animate="{ y: 0, scale: 1 }"
-                    :exit="position === 'bottom' ? { y: '100%' } : position === 'top' ? { y: '-100%' } : { scale: 0.85 }"
-                    :transition="{ type: 'spring', stiffness: 400, damping: 35, mass: 0.8 }">
-                    <motion.button v-if="closeable" class="v-popup__close" @click="close" @pointerdown.stop
-                        :whileHover="{ scale: 1.1 }" :whileTap="{ scale: 0.9 }"
-                        :transition="{ type: 'spring', stiffness: 500, damping: 25 }" :target-title="t('tips.close')">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <line x1="18" y1="6" x2="6" y2="18" />
-                            <line x1="6" y1="6" x2="18" y2="18" />
-                        </svg>
-                    </motion.button>
-                    <slot />
-                </motion.div>
-            </motion.div>
-        </AnimatePresence>
+    <Teleport to="body">
+        <div v-if="isVisible" class="v-popup-wrapper" :class="{ 'v-popup--active': isActive }">
+            <div class="v-popup-overlay" @click="onOverlayClick" />
+            <div class="v-popup" :class="[`v-popup--${position}`, { 'v-popup--round': round }]"
+                :style="{ height: position === 'center' ? '90%' : undefined, overflow: position === 'center' ? 'hidden' : undefined }"
+                @click.stop>
+                <button v-if="closeable" class="v-popup__close" @click="close" @pointerdown.stop"
+                    :target-title="t('tips.close')">
+                    <XIcon scale="20" />
+                </button>
+                <slot />
+            </div>
+        </div>
     </Teleport>
 </template>
 
 <script setup lang="ts">
-import { computed, watch, onUnmounted } from 'vue';
-import { AnimatePresence, motion } from 'motion-v';
+import { ref, watch, nextTick, onUnmounted } from 'vue';
 import { pushEscHandler, popEscHandler } from '@/utils';
 import { useI18n } from 'vue-i18n';
+import { XIcon } from '@lucide/vue';
 
 const { t } = useI18n();
 
@@ -39,7 +28,6 @@ const props = withDefaults(defineProps<{
     position?: 'bottom' | 'top' | 'center';
     round?: boolean;
     closeable?: boolean;
-    teleportTo?: string;
     lockScroll?: boolean;
     closeOnClickOverlay?: boolean;
 }>(), {
@@ -47,7 +35,6 @@ const props = withDefaults(defineProps<{
     position: 'bottom',
     round: false,
     closeable: false,
-    teleportTo: 'body',
     lockScroll: true,
     closeOnClickOverlay: true,
 });
@@ -57,23 +44,29 @@ const emit = defineEmits<{
     'close': [];
 }>();
 
-const popupStyle = computed(() => {
-    if (props.position === 'center') {
-        return { height: '90%', overflow: 'hidden' };
-    }
-    return {};
-});
+const isVisible = ref(false);
+const isActive = ref(false);
 
-watch(() => props.show, (val) => {
-    if (props.lockScroll && val) {
-        document.body.style.overflow = 'hidden';
-    } else if (props.lockScroll && !val) {
-        document.body.style.overflow = '';
-    }
+watch(() => props.show, async (val) => {
     if (val) {
+        isVisible.value = true;
+        await nextTick();
+        requestAnimationFrame(() => {
+            isActive.value = true;
+        });
+        if (props.lockScroll) {
+            document.body.style.overflow = 'hidden';
+        }
         pushEscHandler(close);
     } else {
+        isActive.value = false;
         popEscHandler();
+        setTimeout(() => {
+            isVisible.value = false;
+            if (props.lockScroll) {
+                document.body.style.overflow = '';
+            }
+        }, 200);
     }
 });
 
@@ -95,18 +88,28 @@ const close = () => {
 </script>
 
 <style scoped>
-.v-popup-overlay {
+.v-popup-wrapper {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: var(--filter-blur, blur(20px));
+    inset: 0;
     z-index: 2000;
     display: flex;
     align-items: flex-end;
     justify-content: center;
+}
+
+.v-popup-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: var(--filter-blur, blur(20px));
+    will-change: opacity;
+    transform: translateZ(0);
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.v-popup--active .v-popup-overlay {
+    opacity: 1;
 }
 
 .v-popup {
@@ -115,9 +118,10 @@ const close = () => {
     box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
     width: 100%;
     height: 90%;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
+    z-index: 1;
+    will-change: transform;
 }
 
 .v-popup--round {
@@ -146,6 +150,27 @@ const close = () => {
     border-radius: 0 0 16px 16px;
 }
 
+.v-popup--bottom {
+    --popup-transform: translateY(100%);
+}
+
+.v-popup--top {
+    --popup-transform: translateY(-100%);
+}
+
+.v-popup--center {
+    --popup-transform: scale(0.85);
+}
+
+.v-popup {
+    transform: var(--popup-transform);
+    transition: transform 0.2s ease-in-out;
+}
+
+.v-popup--active .v-popup {
+    transform: none;
+}
+
 .v-popup__close {
     position: absolute;
     top: 8px;
@@ -159,12 +184,16 @@ const close = () => {
     background: color-mix(in srgb, var(--text-color) 8%, transparent);
     border-radius: 50%;
     color: var(--text-color);
-    cursor: pointer;
-    z-index: 10;
-    transition: background 0.2s;
+    will-change: transform;
+    transform: translateZ(0);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .v-popup__close:hover {
-    background: color-mix(in srgb, var(--text-color) 16%, transparent);
+    transform: scale(1.2) translateZ(0);
+}
+
+.v-popup__close:active {
+    transform: scale(0.9) translateZ(0);
 }
 </style>

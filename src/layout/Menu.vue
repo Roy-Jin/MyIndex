@@ -102,7 +102,7 @@ defineExpose({
     backdrop-filter: var(--filter-blur);
     right: 0;
     transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease;
-    transform: translateX(100%);
+    transform: translateX(100%) translateZ(0);
     opacity: 0;
     pointer-events: none;
     z-index: 77;
@@ -111,11 +111,12 @@ defineExpose({
     justify-content: safe center;
     align-items: center;
     background: var(--theme-color-light);
+    will-change: transform, opacity;
 }
 
 .menu.open {
     pointer-events: all;
-    transform: translateX(0);
+    transform: translateX(0) translateZ(0);
     opacity: 1;
 }
 
@@ -167,12 +168,12 @@ defineExpose({
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(20px) translateZ(0);
     }
 
     to {
         opacity: 0.86;
-        transform: translateY(0);
+        transform: translateY(0) translateZ(0);
     }
 }
 

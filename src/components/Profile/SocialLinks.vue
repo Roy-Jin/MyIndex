@@ -85,6 +85,7 @@ const onDialogConfirm = () => {
     transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     border: 2px solid transparent;
     backdrop-filter: var(--filter-blur);
+    will-change: transform;
 
     &:hover {
         background-color: color-mix(in srgb, var(--link-color) 30%, transparent);
@@ -93,7 +94,7 @@ const onDialogConfirm = () => {
     }
 
     &:active {
-        transform: scale(0.95);
+        transform: scale(0.95) translateZ(0);
     }
 }
 </style>

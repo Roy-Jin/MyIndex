@@ -132,7 +132,7 @@ const handleHomepageClick = () => {
     border: 2px solid transparent;
     position: relative;
     overflow: hidden;
-    cursor: pointer;
+    will-change: transform;
 
     &::before {
         content: '';
@@ -159,7 +159,7 @@ const handleHomepageClick = () => {
     }
 
     &:active {
-        transform: scale(0.98);
+        transform: scale(0.98) translateZ(0);
     }
 
     &.active {
@@ -192,6 +192,7 @@ const handleHomepageClick = () => {
     text-overflow: ellipsis;
     white-space: nowrap;
     transition: transform 0.3s ease;
+    will-change: transform;
 }
 
 .project-description {
@@ -251,11 +252,11 @@ const handleHomepageClick = () => {
 
     0%,
     100% {
-        transform: scale(1);
+        transform: scale(1) translateZ(0);
     }
 
     50% {
-        transform: scale(1.02);
+        transform: scale(1.02) translateZ(0);
     }
 }
 </style>

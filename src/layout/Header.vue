@@ -5,16 +5,21 @@
             <h2>{{ envInfo.title[0] }}<span class="subtitle">{{ envInfo.title[1] }}</span></h2>
         </div>
         <div class="right">
-            <div class="musicInfo" v-if="global.music.isPlaying">
-                <div :style="{ color: `color-mix(in srgb, ${global.music.themeColor}, var(--text-color) 60%)` }">
-                    {{ global.music.name }}
-                </div>
-                <div>{{ global.music.curLrc }}</div>
-            </div>
+            <AnimatePresence>
+                <motion.div :initial="{ x: '50%', scale: 0 }" :animate="{ x: '0%', scale: 1 }"
+                    :transition="{ type: 'spring', duration: 0.3, bounce: 0.2 }" :exit="{ x: '50%', scale: 0 }"
+                    class="musicInfo" v-if="global.music.isPlaying && !menuRef?.isOpen">
+                    <div :style="{ color: `color-mix(in srgb, ${global.music.themeColor}, var(--text-color) 60%)` }">
+                        {{ global.music.name }}
+                    </div>
+                    <div>{{ global.music.curLrc }}</div>
+                </motion.div>
+            </AnimatePresence>
             <div class="menu-btn">
                 <component v-if="global.music.audio" :is="Disc3Icon" @click="tooglePlayPause" :size="24"
                     :class="{ 'play': global.music.isPlaying, 'pause': !global.music.isPlaying }" class="cursor-target"
-                    :color="global.music.themeColor" :target-title="t('music.title') + ': ' + global.music.name" />
+                    :color="`color-mix(in srgb, ${global.music.themeColor}, var(--text-color) 60%)`"
+                    :target-title="t('music.title') + ': ' + global.music.name" />
                 <component :is="menuRef?.isOpen ? XIcon : MenuIcon" strokeWidth="3px" @click="toggleMenu" :size="32"
                     color="var(--theme-color)" class="cursor-target" :target-title="t('menu.title')" />
             </div>
@@ -30,6 +35,7 @@ import { useGlobal } from '@/stores/global';
 import { MenuIcon, XIcon, Disc3Icon } from '@lucide/vue';
 import { useI18n } from 'vue-i18n';
 import Menu from '@/layout/Menu.vue';
+import { motion, AnimatePresence } from 'motion-v';
 
 const env = useEnv();
 const global = useGlobal();
@@ -140,6 +146,7 @@ defineExpose({
     overflow: hidden;
     margin-right: 0.5rem;
     font-size: small;
+    will-change: transform, opacity;
 
     &>div {
         font-weight: bolder;
@@ -168,6 +175,7 @@ defineExpose({
     .play {
         filter: brightness(1.2) saturate(200%);
         animation: spin 3s linear infinite;
+        will-change: transform;
     }
 
     .pause {

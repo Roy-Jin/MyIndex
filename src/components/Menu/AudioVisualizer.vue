@@ -196,6 +196,7 @@ watch(() => global.music.isPlaying, (playing) => {
     height: 100%;
     opacity: 0;
     transition: opacity 0.8s ease;
+    will-change: opacity;
     pointer-events: none;
     z-index: 0;
 }

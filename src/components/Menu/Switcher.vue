@@ -95,7 +95,7 @@ const handleClick = (event: MouseEvent) => {
     width: 100%;
     position: relative;
     overflow: hidden;
-    cursor: pointer;
+    will-change: transform;
 
     .icon-wrapper {
         flex-shrink: 0;
@@ -109,6 +109,7 @@ const handleClick = (event: MouseEvent) => {
         align-items: center;
         justify-content: center;
         background: color-mix(in srgb, var(--theme-color) 15%, transparent);
+        will-change: transform;
 
         .switcher-icon {
             width: 26px;
@@ -140,6 +141,7 @@ const handleClick = (event: MouseEvent) => {
         flex-shrink: 0;
         color: var(--theme-color);
         opacity: 0.6;
+        will-change: transform;
     }
 
     .shine-effect {
