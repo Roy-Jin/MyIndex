@@ -1,5 +1,5 @@
 <template>
-    <div class="player" ref="Player">
+    <div class="player cursor-target" :style="{ '--theme': global.music.themeColor }">
         <div class="top">
             <div class="cover-container" @click="toggleCoverMode">
                 <div class="vinyl-disc"
@@ -57,7 +57,7 @@ import { useEnv } from "@/stores/env";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useGlobal } from '@/stores/global';
 import { useI18n } from 'vue-i18n';
-import { formatTime, getThemeColorFromImage, setCSSVariable } from "@/utils";
+import { formatTime, getThemeColorFromImage } from "@/utils";
 import {
     Repeat,
     Repeat1,
@@ -73,7 +73,6 @@ import {
 
 const env = useEnv();
 const global = useGlobal();
-const Player = ref<HTMLDivElement>();
 const coverImg = ref<HTMLImageElement>();
 const audioRef = ref<HTMLAudioElement | null>(null);
 const { t } = useI18n();
@@ -316,10 +315,7 @@ const setupMediaSessionActions = () => {
 
 const loadThemeColor = () => {
     const color = getThemeColorFromImage(coverImg.value as HTMLImageElement);
-    if (color && Player.value) {
-        setCSSVariable('--theme-color', color, Player.value);
-        global.music.themeColor = color;
-    }
+    if (color) global.music.themeColor = color;
 }
 
 watch(() => global.music.url, (newUrl, oldUrl) => {
@@ -382,7 +378,7 @@ onUnmounted(() => {
     flex-direction: column;
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     background: color-mix(in srgb, var(--main-bg), var(--theme-dark) 68%);
-    box-shadow: 0 8px 32px color-mix(in srgb, var(--theme-color) 15%, transparent);
+    box-shadow: 0 8px 32px var(--theme-light);
     will-change: transform;
 }
 
@@ -409,7 +405,7 @@ onUnmounted(() => {
     height: 140px;
     border-radius: 50%;
     background: radial-gradient(circle at center, var(--vinyl-gray) 0%, var(--vinyl-black) 35%, var(--vinyl-gray) 55%, var(--vinyl-black) 100%);
-    box-shadow: 0 8px 24px color-mix(in srgb, var(--theme-color) 25%, transparent);
+    box-shadow: 0 8px 24px var(--theme-light);
     z-index: 1;
     opacity: 1;
     transform: scale(1);
@@ -436,7 +432,7 @@ onUnmounted(() => {
     box-shadow:
         0 0 0 4px var(--vinyl-gray),
         0 0 0 6px var(--vinyl-black),
-        0 4px 12px color-mix(in srgb, var(--theme-color) 20%, transparent);
+        0 4px 12px var(--theme-light);
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
@@ -449,7 +445,7 @@ onUnmounted(() => {
     width: 100%;
     height: 100%;
     border-radius: 16px;
-    box-shadow: 0 8px 24px color-mix(in srgb, var(--theme-color) 30%, transparent);
+    box-shadow: 0 8px 24px var(--theme-light);
 }
 
 .cover-center {
@@ -467,17 +463,6 @@ onUnmounted(() => {
 .cover-center.hidden {
     opacity: 0;
     transform: scale(0.5);
-}
-
-.cover-shadow {
-    position: absolute;
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    background: var(--theme-color);
-    filter: blur(28px);
-    opacity: 0.3;
-    z-index: 0;
 }
 
 .info-container {
@@ -499,7 +484,6 @@ onUnmounted(() => {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: var(--text-color);
 }
 
 .name-artist .name {
@@ -519,9 +503,7 @@ onUnmounted(() => {
     text-overflow: ellipsis;
     min-height: 1.25rem;
     opacity: 0.85;
-    color: var(--text-color);
     width: 100%;
-    max-width: 100%;
 }
 
 .progress-container {
@@ -534,13 +516,13 @@ onUnmounted(() => {
 .progress-bar {
     flex: 1;
     height: 6px;
-    background: var(--theme-dark);
+    background: var(--theme-light);
     border-radius: 3px;
 }
 
 .progress {
     height: 100%;
-    background: linear-gradient(90deg, var(--theme-color), color-mix(in srgb, var(--text-color), var(--theme-color) 68%));
+    background: linear-gradient(90deg, var(--theme), color-mix(in srgb, var(--text-color), var(--theme) 68%));
     border-radius: 3px;
 }
 
@@ -581,7 +563,7 @@ onUnmounted(() => {
     width: 56px;
     height: 56px;
     background: var(--theme-light);
-    border: 2px solid var(--theme-color);
+    border: 2px solid var(--theme);
 }
 
 .control.play .icon {

@@ -12,7 +12,7 @@
                         layout: {
                             type: 'spring', visualDuration: 0.2, bounce: 0.5
                         }
-                    }" layout>
+                    }" layout="position">
                     <div v-if="title || $slots.title" class="v-dialog__title">
                         <slot name="title">{{ title }}</slot>
                     </div>
@@ -141,7 +141,7 @@ defineExpose({
 }
 
 .v-dialog {
-    background: var(--main-bg, #fff);
+    background: var(--main-bg);
     border-radius: 16px;
     max-width: 85%;
     width: 20rem;

@@ -10,7 +10,7 @@
                 <div class="title">
                     <span>{{ t('menu.title') }}</span>
                 </div>
-                <MusicPlayer class="cursor-target" />
+                <MusicPlayer />
                 <hr>
                 <div class="switcher-container">
                     <Switcher class="cursor-target" :icon="themeIcon" :label="$t('theme.name')" :value="themeValue"
