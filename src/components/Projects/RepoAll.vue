@@ -8,7 +8,7 @@
                     class="search-input" />
                 <X v-if="searchQuery" class="clear-icon" :size="20" @click="clearSearch" />
             </label>
-            <Scrollable ref="scrollableRef" :options="{ scrollbar: true }">
+            <Scrollable :options="{ scrollbar: true }">
                 <div class="repos-grid">
                     <AnimatePresence mode="popLayout">
                         <Motion v-for="repo in filteredRepos" :key="repo.html_url"
@@ -43,7 +43,6 @@ const props = defineProps<{
 const { t } = useI18n();
 const show = ref(false);
 const searchQuery = ref('');
-const scrollableRef = ref<typeof Scrollable | null>(null);
 
 const { debounced: debouncedQuery, cancel: cancelDebounce } = useDebouncedRef(searchQuery, 300);
 
@@ -66,10 +65,7 @@ const clearSearch = () => {
 };
 
 watch(() => show.value, (newVal) => {
-    if (newVal) {
-        clearSearch();
-        setTimeout(scrollableRef?.value?.refresh, 0);
-    }
+    if (newVal) clearSearch();
 });
 
 const showPopup = () => {

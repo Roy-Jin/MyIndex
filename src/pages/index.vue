@@ -18,10 +18,10 @@ import { useGlobal } from '@/stores/global';
 import {
     Profile,
     Today,
-    Projects
+    Projects,
+    AudioVisualizer
 } from '@/layout';
 import { Scrollable } from '@/components/Libs';
-import { AudioVisualizer } from '@/components/Menu';
 
 const env = useEnv();
 const global = useGlobal();
