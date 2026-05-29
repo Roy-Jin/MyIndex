@@ -1,7 +1,7 @@
 <template>
     <div class="player cursor-target" :style="{ '--theme': global.music.themeColor }">
         <div class="top">
-            <div class="cover-container" @click="toggleCoverMode">
+            <div class="cover-container" @click.stop="toggleCoverMode">
                 <div class="vinyl-disc"
                     :class="{ 'rotating': global.music.isPlaying && !isStaticMode, 'hidden': isStaticMode }"></div>
                 <img ref="coverImg" crossorigin="anonymous" :src="global.music.pic" :alt="global.music.name"
@@ -17,7 +17,7 @@
                 <div class="cur-lyric">{{ global.music.curLrc }}</div>
                 <div class="progress-container">
                     <div class="cur-time">{{ formatTime(currentTime) }}</div>
-                    <div class="progress-bar" @click="seekTo">
+                    <div class="progress-bar" @click.stop="seekTo">
                         <div class="progress" :style="{ width: progressPercentage + '%' }"></div>
                     </div>
                     <div class="total-time">{{ formatTime(duration) }}</div>
@@ -26,21 +26,21 @@
         </div>
         <div class="bottom">
             <div class="controls">
-                <div class="control order" @click="toggleOrder" :target-title="orderTitle">
+                <div class="control order" @click.stop="toggleOrder" :target-title="orderTitle">
                     <component :is="orderIcon" color="var(--text-color)" />
                 </div>
-                <div class="control prev" @click="previousSong" :target-title="t('music.prev')">
+                <div class="control prev" @click.stop="previousSong" :target-title="t('music.prev')">
                     <SkipBack color="var(--text-color)" />
                 </div>
-                <div class="control play" :class="{ 'playing': global.music.isPlaying }" @click="togglePlay"
+                <div class="control play" :class="{ 'playing': global.music.isPlaying }" @click.stop="togglePlay"
                     :target-title="playTitle">
                     <Play v-if="!global.music.isPlaying" class="icon" :fill="'var(--play-color)'" />
                     <Pause v-else class="icon" :fill="'var(--play-color)'" />
                 </div>
-                <div class="control next" @click="nextSong" :target-title="t('music.next')">
+                <div class="control next" @click.stop="nextSong" :target-title="t('music.next')">
                     <SkipForward color="var(--text-color)" />
                 </div>
-                <div class="control volume" @click="toggleVolume" :target-title="volumeTitle">
+                <div class="control volume" @click.stop="toggleVolume" :target-title="volumeTitle">
                     <component :is="volumeIcon" color="var(--text-color)" />
                 </div>
             </div>
@@ -70,6 +70,7 @@ import {
     Shuffle,
     Volume
 } from '@lucide/vue';
+import { MusicPlayer } from '@/components/Menu';
 
 const env = useEnv();
 const global = useGlobal();
@@ -463,6 +464,17 @@ onUnmounted(() => {
 .cover-center.hidden {
     opacity: 0;
     transform: scale(0.5);
+}
+
+.cover-shadow {
+    position: absolute;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: var(--theme);
+    filter: blur(28px);
+    opacity: 0.3;
+    z-index: 0;
 }
 
 .info-container {
