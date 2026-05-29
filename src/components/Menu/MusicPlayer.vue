@@ -70,7 +70,6 @@ import {
     Shuffle,
     Volume
 } from '@lucide/vue';
-import { MusicPlayer } from '@/components/Menu';
 
 const env = useEnv();
 const global = useGlobal();
