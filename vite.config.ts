@@ -14,7 +14,7 @@ export default defineConfig({
     VueRouter(),
     vue(),
     tailwindcss(),
-    viteSingleFile(),
+    // viteSingleFile(),
     // vueDevTools(),
   ],
   resolve: {
